@@ -43,15 +43,18 @@
 
 	<div class="tahlil-input-wrapper" id="tahlil-video-input" style="display: none;">
 		<label for="pmg_comment_content">Video</label>
-		<div id="buttons">
-			<label>
-				<input id="query" value='cats' type="text"/>
-				<button id="search-button">
-					Search
-				</button>
-			</label>
-	    </div>
-	    <div id="search-container"></div>
+
+		<div class="search-videos">
+	  		<input type="text" value="" class="searchtext">
+	  		<button type="button" class="searchbutton">Find</button>
+	  	</div>
+	    
+	    <div class="youtube-loader"></div>
+	  	<div class="count"></div>
+
+	    <div class="snipp"></div>
+
+	    <button class="btn btn-primary" id="nextPageButton" style="display: none;">load more</button>
 	</div>
 
 	<div class="tahlil-input-wrapper" id="tahlil-quote-input" style="display: none;">
@@ -61,12 +64,6 @@
 	<textarea class="pmg_comment_content" name="pmg_comment_content" placeholder="Type here.." style="display: none;"></textarea>
 	<input type="hidden" id="pmg_comment_type" name="pmg_comment_type">
 </div>
-
-<!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize-button" style="display: none;">Authorize</button>
-    <button id="signout-button" style="display: none;">Sign Out</button>
-
-    <pre id="content-youtube"></pre>
 
 <div style="margin-bottom: 20px;"></div>
 
@@ -152,9 +149,4 @@
 			$('#tahlil-quote-input').fadeIn();
 		});
 	})
-</script>
-
-<script async defer src="https://apis.google.com/js/api.js"
-  onload="this.onload=function(){};handleClientLoad()"
-  onreadystatechange="if (this.readyState === 'complete') this.onload()">
 </script>

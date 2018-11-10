@@ -108,12 +108,28 @@ class Frontend {
 			false 
 		);
 
+		// wp_enqueue_script( 
+		// 	$this->plugin_name . '-youtube-auth',
+		// 	plugin_dir_url( __FILE__ ) . 'js/auth.js', 
+		// 	array( 'jquery' ), 
+		// 	$this->version, 
+		// 	true 
+		// );
+
 		wp_enqueue_script( 
-			$this->plugin_name . '-youtube-auth',
-			plugin_dir_url( __FILE__ ) . 'js/auth.js', 
+			$this->plugin_name . '-youtube-client',
+			'https://apis.google.com/js/client.js?onload=onClientLoad', 
 			array( 'jquery' ), 
 			$this->version, 
-			true 
+			false 
+		);
+
+		wp_enqueue_script( 
+			$this->plugin_name . '-jquery-ui',
+			'//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 
+			array( 'jquery' ), 
+			$this->version, 
+			false 
 		);
 
 		wp_enqueue_script( 
@@ -121,15 +137,7 @@ class Frontend {
 			plugin_dir_url( __FILE__ ) . 'js/youtube-search.js', 
 			array( 'jquery' ), 
 			$this->version, 
-			true 
-		);
-
-		wp_enqueue_script( 
-			$this->plugin_name . '-youtube-client',
-			'https://apis.google.com/js/client.js?onload=googleApiClientReady', 
-			array( 'jquery' ), 
-			$this->version, 
-			true 
+			false 
 		);
 
 	}

@@ -16,6 +16,7 @@
 	<?php // include_once('reacties-form.php'); ?>
 
 	<?php endwhile; ?>
+	
 </div>
 
 

@@ -1,112 +1,87 @@
-// Client ID and API key from the Developer Console
-var CLIENT_ID = '622883682840-3556cu16r4p4mehvfiigej0avtl5qbss.apps.googleusercontent.com';
+var nextPageToken, prevPageToken;
+var firstPage=true;
+var GAPI_KEY = 'AIzaSyAXH9REWSw5U1RqWDYyCQ3Uzf-3DcN0evs';
 
-// Array of API discovery doc URLs for APIs used by the quickstart
-var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest"];
-
-// Authorization scopes required by the API. If using multiple scopes,
-// separated them with spaces.
-var SCOPES = 'https://www.googleapis.com/auth/youtube.readonly';
-
-var authorizeButton = document.getElementById('authorize-button');
-var signoutButton = document.getElementById('signout-button');
-
-/**
- *  On load, called to load the auth2 library and API client library.
- */
-function handleClientLoad() {
-  gapi.load('client:auth2', initClient);
-}
-
-/**
- *  Initializes the API client library and sets up sign-in state
- *  listeners.
- */
-function initClient() {
-  gapi.client.init({
-    discoveryDocs: DISCOVERY_DOCS,
-    clientId: CLIENT_ID,
-    scope: SCOPES
-  }).then(function () {
-    // Listen for sign-in state changes.
-    gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
-
-    // Handle the initial sign-in state.
-    updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
-    authorizeButton.onclick = handleAuthClick;
-    signoutButton.onclick = handleSignoutClick;
-  });
-}
-
-/**
- *  Called when the signed in status changes, to update the UI
- *  appropriately. After a sign-in, the API is called.
- */
-function updateSigninStatus(isSignedIn) {
-  if (isSignedIn) {
-    authorizeButton.style.display = 'none';
-    signoutButton.style.display = 'block';
-    getChannel();
-  } else {
-    authorizeButton.style.display = 'block';
-    signoutButton.style.display = 'none';
-  }
-}
-
-/**
- *  Sign in the user upon button click.
- */
-function handleAuthClick(event) {
-  gapi.auth2.getAuthInstance().signIn();
-}
-
-/**
- *  Sign out the user upon button click.
- */
-function handleSignoutClick(event) {
-  gapi.auth2.getAuthInstance().signOut();
-}
-
-/**
- * Append text to a pre element in the body, adding the given message
- * to a text node in that element. Used to display info from API response.
- *
- * @param {string} message Text to be placed in pre element.
- */
-function appendPre(message) {
-  var pre = document.getElementById('content-youtube');
-  var textContent = document.createTextNode(message + '\n');
-  pre.appendChild(textContent);
-}
-
-
-/**
- * Print files.
- */
-function getChannel() {
-  gapi.client.youtube.channels.list({
-    'part': 'snippet,contentDetails,statistics',
-    'forUsername': 'GoogleDevelopers'
-  }).then(function(response) {
-    var channel = response.result.items[0];
-    appendPre('This channel\'s ID is ' + channel.id + '. ' +
-              'Its title is \'' + channel.snippet.title + ', ' +
-              'and it has ' + channel.statistics.viewCount + ' views.');
-  });
-}
-
-jQuery( document ).ready(function($) {
-  $('#search-button').on('click', function(e) {
+jQuery(document).ready(function($) {
+  $('.searchbutton').click(function(e) {
     e.preventDefault();
-    var q = $('#query').val();
+    nextPageToken = '';
+    prevPageToken = '';
+    $('.snipp').html('');
+    gapi.client.load('youtube', 'v3', onYouTubeApiLoad);
+  });
+    
+  $('.nextPageButton').click(function(e) {
+    e.preventDefault();
+    searchYouTubeApi(nextPageToken);
+  });
+    
+  $('.prevPageButton').click(function(e) {
+    e.preventDefault();
+    searchYouTubeApi(prevPageToken);
+  });
+
+  /**
+   * passing token to each request
+   */
+  function onYouTubeApiLoad() {
+    gapi.client.setApiKey(GAPI_KEY);
+    searchYouTubeApi();
+  }
+
+  /**
+   * search youtube api
+   */
+  function searchYouTubeApi(PageToken)
+  {
+    var searchText = $('.searchtext').val();
+    if (!searchText || searchText === '') {
+      searchText = 'memories';
+    }
+    $('.youtube-loader').html("<div id=\"searching\"><b>Searching for "+searchText+"</b></div>");
+
     var request = gapi.client.youtube.search.list({
-      q: q,
-      part: 'snippet'
+      part: 'snippet',
+      q:searchText,
+      maxResults:10,
+      pageToken:PageToken,
+      type: 'video',
+      videoEmbeddable: true
     });
 
-    request.execute(function(response) {
-      var str = JSON.stringify(response.result);
-      $('#search-container').html('<pre>' + str + '</pre>');
-    });
-  })
-})
+    request.execute(onSearchResponse);
+  }
+
+  /**
+   * handle response from api
+   */
+  function onSearchResponse(response) 
+  {
+    var resultCount = response.pageInfo.totalResults;
+    if (resultCount > 0) {
+      $('.youtube-loader').html("");
+      // $('.count').replaceWith("<div id=count><b>Found "+resultCount+" Results.</b></div>");
+      $('.nextPageButton').fadeIn();
+      
+      nextPageToken = response.nextPageToken;
+      prevPageToken = response.prevPageToken;
+
+      for (var i=0; i<response.items.length; i++)
+      {
+        var title = '<div class="video-title">' + response.items[i].snippet.title + '</div>';
+        var thumbnails_default = response.items[i].snippet.thumbnails.default.url;
+        var thumbnails_medium = response.items[i].snippet.thumbnails.medium.url;
+        var thumbnails_high = response.items[i].snippet.thumbnails.high.url;
+        var videoID = response.items[i].id.videoId;
+        var videoIframe = '<iframe width="240" height="auto" src="https://www.youtube.com/embed/'+videoID+'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+
+        $('.snipp').append(
+          videoIframe + title
+        );
+      }
+    } else {
+      $('.youtube-loader').html("<div id=\"searching\"><b>no videos found for keyword: "+searchText+"</b></div>");
+    }
+  }
+
+});
