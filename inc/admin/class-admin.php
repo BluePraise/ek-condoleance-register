@@ -83,7 +83,6 @@ class Admin {
 		$params = array ( 'ajaxurl' => admin_url( 'admin-ajax.php' ) );
 		wp_enqueue_script( 'nds_ajax_handle', plugin_dir_url( __FILE__ ) . 'js/nds-wp-list-table-demo-admin.js', array( 'jquery' ), $this->version, false );				
 		wp_localize_script( 'nds_ajax_handle', 'params', $params );		
-
 	}
 	
 	/**

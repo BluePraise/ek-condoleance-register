@@ -28,7 +28,7 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 		parent::__construct( [
 			'singular' => __( 'Reactie', $this->plugin_text_domain ), //singular name of the listed records
 			'plural'   => __( 'Reacties', $this->plugin_text_domain ), //plural name of the listed records
-			'ajax'     => false //should this table support ajax?
+			'ajax'     => true //should this table support ajax?
 		] );
 
 		$this->plugin_text_domain = $plugin_text_domain;
@@ -109,6 +109,7 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 		);
 
 		$_comments = get_comments( $args );
+
 		if ( is_array( $_comments ) ) {
 			update_comment_cache( $_comments );
 
@@ -130,7 +131,48 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 			'total_items' => $total_comments,
 			'per_page' => $comments_per_page,
 		) );
+
+		$this->process_bulk_actions();
 	}
+
+	/**
+	 * 
+	 * Process bulk actions
+	 * @author makmalf
+	 */
+    public function process_bulk_action() {
+        // security check!
+        if ( isset( $_POST['_wpnonce'] ) && ! empty( $_POST['_wpnonce'] ) ) {
+
+            $nonce  = filter_input( INPUT_POST, '_wpnonce', FILTER_SANITIZE_STRING );
+            $action = 'bulk-' . $this->_args['plural'];
+
+            if ( ! wp_verify_nonce( $nonce, $action ) )
+                wp_die( 'Nope! Security check failed!' );
+        }
+
+        $action = $this->current_action();
+
+        switch ( $action ) {
+
+            case 'delete':
+                wp_die( 'Delete something' );
+                break;
+
+            case 'save':
+                wp_die( 'Save something' );
+                break;
+
+            default:
+                // do nothing or something else
+                return;
+                break;
+        }
+
+        return;
+    }
+
+
 
 	/**
 	 *
@@ -317,15 +359,15 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 		if ( ! isset( $has_items ) ) {
 			$has_items = $this->has_items();
 		}
-?>
+		?>
 		<div class="alignleft actions">
-<?php
+		<?php
 		if ( 'top' === $which ) {
-?>
+		?>
 			<label class="screen-reader-text" for="filter-by-comment-type"><?php _e( 'Filter by comment type' ); ?></label>
 			<select id="filter-by-comment-type" name="comment_type">
 				<option value=""><?php _e( 'All comment types' ); ?></option>
-<?php
+		<?php
 				/**
 				 * Filters the comment types dropdown menu.
 				 *
@@ -342,7 +384,7 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 					echo "\t" . '<option value="' . esc_attr( $type ) . '"' . selected( $comment_type, $type, false ) . ">$label</option>\n";
 			?>
 			</select>
-<?php
+		<?php
 			/**
 			 * Fires just before the Filter submit button for comment types.
 			 *
@@ -437,33 +479,33 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 
 		$this->screen->render_screen_reader_content( 'heading_list' );
 
-?>
-<table class="wp-list-table <?php echo implode( ' ', $this->get_table_classes() ); ?>">
-	<thead>
-	<tr>
-		<?php $this->print_column_headers(); ?>
-	</tr>
-	</thead>
-
-	<tbody id="the-comment-list" data-wp-lists="list:comment">
-		<?php $this->display_rows_or_placeholder(); ?>
-	</tbody>
-
-	<tbody id="the-extra-comment-list" data-wp-lists="list:comment" style="display: none;">
-		<?php
-			$this->items = $this->extra_items;
-			$this->display_rows_or_placeholder();
 		?>
-	</tbody>
+		<table class="wp-list-table <?php echo implode( ' ', $this->get_table_classes() ); ?>">
+			<thead>
+			<tr>
+				<?php $this->print_column_headers(); ?>
+			</tr>
+			</thead>
 
-	<tfoot>
-	<tr>
-		<?php $this->print_column_headers( false ); ?>
-	</tr>
-	</tfoot>
+			<tbody id="the-comment-list" data-wp-lists="list:comment">
+				<?php $this->display_rows_or_placeholder(); ?>
+			</tbody>
 
-</table>
-<?php
+			<tbody id="the-extra-comment-list" data-wp-lists="list:comment" style="display: none;">
+				<?php
+					$this->items = $this->extra_items;
+					$this->display_rows_or_placeholder();
+				?>
+			</tbody>
+
+			<tfoot>
+			<tr>
+				<?php $this->print_column_headers( false ); ?>
+			</tr>
+			</tfoot>
+
+		</table>
+		<?php
 
 		$this->display_tablenav( 'bottom' );
 	}

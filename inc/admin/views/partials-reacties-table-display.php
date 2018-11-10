@@ -13,6 +13,8 @@ $pagenum = $wp_list_table->get_pagenum();
 
 $doaction = $wp_list_table->current_action();
 
+print_r($doaction);
+
 if ( $doaction ) {
 	check_admin_referer( 'bulk-comments' );
 
@@ -144,6 +146,7 @@ $wp_list_table->prepare_items();
 wp_enqueue_script('admin-comments');
 enqueue_comment_hotkeys_js();
 $comments_count = wp_count_comments();
+
 if ( $comments_count->moderated > 0 ) {
 	$title = sprintf( __( 'Comments (%s)' ),
 		number_format_i18n( $comments_count->moderated )

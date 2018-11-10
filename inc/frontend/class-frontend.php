@@ -8,10 +8,6 @@ namespace Tahlil\Inc\Frontend;
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the public-facing stylesheet and JavaScript.
  *
- * @link       https://www.nuancedesignstudio.in
- * @since      1.0.0
- *
- * @author    Karan NA Gupta
  */
 
 class Frontend {
@@ -52,11 +48,9 @@ class Frontend {
 	 * @param		string $plugin_text_domain	The text domain of this plugin
 	 */
 	public function __construct( $plugin_name, $version, $plugin_text_domain ) {
-
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->plugin_text_domain = $plugin_text_domain;
-
 	}
 
 	/**
@@ -78,7 +72,12 @@ class Frontend {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/nds-admin-form-demo-frontend.css', array(), $this->version, 'all' );
+		wp_enqueue_style( 
+			$this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/nds-admin-form-demo-frontend.css', 
+			array(), 
+			$this->version, 
+			'all' 
+		);
 
 	}
 
@@ -101,7 +100,37 @@ class Frontend {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/nds-admin-form-demo-frontend.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( 
+			$this->plugin_name,
+			plugin_dir_url( __FILE__ ) . 'js/nds-admin-form-demo-frontend.js', 
+			array( 'jquery' ), 
+			$this->version, 
+			false 
+		);
+
+		wp_enqueue_script( 
+			$this->plugin_name . '-youtube-auth',
+			plugin_dir_url( __FILE__ ) . 'js/auth.js', 
+			array( 'jquery' ), 
+			$this->version, 
+			true 
+		);
+
+		wp_enqueue_script( 
+			$this->plugin_name . '-youtube-search',
+			plugin_dir_url( __FILE__ ) . 'js/youtube-search.js', 
+			array( 'jquery' ), 
+			$this->version, 
+			true 
+		);
+
+		wp_enqueue_script( 
+			$this->plugin_name . '-youtube-client',
+			'https://apis.google.com/js/client.js?onload=googleApiClientReady', 
+			array( 'jquery' ), 
+			$this->version, 
+			true 
+		);
 
 	}
 

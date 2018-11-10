@@ -3,3 +3,10 @@
  *
  * The file is enqueued from inc/frontend/class-frontend.php.
  */
+
+#comment-form-select-type .btn {
+	margin-bottom: 8px;
+	margin-right: 4px;
+	margin-left: 0;
+	line-height: 1;
+}
