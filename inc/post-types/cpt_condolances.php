@@ -38,7 +38,7 @@ function cpt_condolances() {
 	);
 	$args = array(
 		'label'                 => __( 'Condolance', 'tahlil' ),
-		'description'           => __( 'Post Type Description', 'tahlil' ),
+		'description'           => __( 'All of the memories lies with us', 'tahlil' ),
 		'labels'                => $labels,
 		'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'trackbacks', 'revisions', 'custom-fields' ),
 		'hierarchical'          => false,

@@ -2,6 +2,8 @@
 
 namespace Tahlil\Inc\Frontend;
 
+if (!defined('ABSPATH')) { exit; }
+
 class Reactiesform {
 	public function __construct() {
 		// add style
@@ -19,11 +21,32 @@ class Reactiesform {
 		// insert comment to db
 		add_action( 'comment_post', array($this, 'pmg_comment_tut_insert_comment'), 10, 1 );
 
-		// add title to comment text
-		// add_filter( 'comment_text', array($this, 'pmg_comment_tut_add_title_to_text'), 99, 2 );
-
 		// add single template for cpt_condolances
 		add_filter('single_template', array($this, 'my_custom_template'));
+
+		// enqueu
+		add_action( 'wp_enqueue_scripts', array( $this, 'tahlil_ajax_comments_scripts' ) );
+	}
+
+
+	/**
+	 *  Ajax script comments
+	 */
+	function tahlil_ajax_comments_scripts() {
+        wp_enqueue_script(
+            '-tahlil-ajax-comments',
+            plugin_dir_url( __FILE__ ) . 'js/tahlil-ajax-comments.js',
+            array( 'jquery' ),
+            '1.0.0',
+            true
+        );
+
+        $data = array(
+            'ajaxurl' => admin_url( 'admin-ajax.php' ),
+            'nonce'   => wp_create_nonce( 'tahlil_ajax_comments' )
+        );
+
+        wp_localize_script( '-tahlil-ajax-comments', 'TAHLIL_AJAX_COMMENTS', $data );
 	}
 
 	/**
@@ -33,9 +56,16 @@ class Reactiesform {
 	{
 		add_action( 'comment_form_top', array($this, 'pmg_comment_tut_fields') );
 		add_filter( 'comment_form_defaults', array($this, 'modify_commentform_title') );
+		add_filter( 'comment_form_default_fields', array($this, 'remove_website_field') );
 		add_filter( 'comment_form_field_comment', array($this, 'modify_commentform_comment') );
 	}
 
+	// remove website field
+	public function remove_website_field($fields) {
+    	unset($fields['url']);
+    	return $fields;
+	}
+ 
 	// title
 	public function modify_commentform_title($defaults)
 	{
@@ -48,11 +78,6 @@ class Reactiesform {
 	public function modify_commentform_comment()
 	{
 		$defaults = '
-		<p class="comment-form-title">
-			<input type="hidden" name="comment_type" value="reactie">
-	    	<label for="pmg_comment_title">Title</label>
-	    	<input type="text" aria-required="true" placeholder="Title..." name="pmg_comment_title" id="pmg_comment_title" />
-		</p>
 		<p class="comment-form-comment">
 			<label for="comment">Message</label>
 			<textarea placeholder="message..." id="comment" name="comment" aria-required="true"></textarea>
@@ -130,6 +155,7 @@ class Reactiesform {
 
 	    wp_nonce_field( 'pmg_comment_update', 'pmg_comment_update', false );
 	    ?>
+	    <input type="hidden" name="comment_type" value="reactie">
 	    <p>
 	        <label for="pmg_comment_title"><?php _e( 'Title' ); ?></label>
 	        <input type="text" name="pmg_comment_title" value="<?php echo esc_attr( $title ); ?>" class="widefat" />
@@ -152,17 +178,32 @@ class Reactiesform {
 	{
 	    if( ! isset( $_POST['pmg_comment_update'] ) || ! wp_verify_nonce( $_POST['pmg_comment_update'], 'pmg_comment_update' ) ) return;
 	    
-	    if( isset( $_POST['comment_type'] ) ) {
-	    	if ($_POST['comment_type'] == 'reactie') {
-	    		if( isset( $_POST['pmg_comment_title'] ) ) {
-	        		update_comment_meta( $comment_id, 'pmg_comment_title', esc_attr( $_POST['pmg_comment_title'] ) );
-	    		}
-	        	wp_update_comment( array(
-	        		'comment_ID' => $comment_id,
-	        		'comment_type' => 'reactie'
-	        	));
-	    	}
-	    }
+		
+		if( isset( $_POST['pmg_comment_title'] ) ) {
+    		update_comment_meta( $comment_id, 'pmg_comment_title', esc_attr( $_POST['pmg_comment_title'] ) );
+		}
+
+		if( isset( $_POST['pmg_comment_content'] ) ) {
+			if ($_POST['pmg_comment_type'] == 'video') {
+				if (!isset($_POST['selected_video_audio']) || $_POST['selected_video_audio'] == '') {
+					wp_die('Please chooose a video');
+				}
+				$content = $_POST['selected_video_audio'];
+				update_comment_meta( $comment_id, 'pmg_comment_content', $content);
+			} else if ($_POST['pmg_comment_type'] == 'music') {
+				if (!isset($_POST['selected_video_audio']) || $_POST['selected_video_audio'] == '') {
+					wp_die('Please chooose a video');
+				}
+				$content = $_POST['selected_video_audio'];
+				update_comment_meta( $comment_id, 'pmg_comment_content', $content);
+			} else {
+    			update_comment_meta( $comment_id, 'pmg_comment_content', esc_attr( $_POST['pmg_comment_content'] ) );
+			}
+		}
+
+		if( isset( $_POST['pmg_comment_type'] ) ) {
+    		update_comment_meta( $comment_id, 'pmg_comment_type', esc_attr( $_POST['pmg_comment_type'] ) );
+		}
 	}
 
 	/**
@@ -170,18 +211,38 @@ class Reactiesform {
 	 */
 	public function pmg_comment_tut_insert_comment( $comment_id )
 	{
-	    
 	    if( isset( $_POST['comment_type'] ) ) {
 	    	if ($_POST['comment_type'] == 'reactie') {
+				// comment title
 	    		if( isset( $_POST['pmg_comment_title'] ) ) {
 	        		update_comment_meta( $comment_id, 'pmg_comment_title', esc_attr( $_POST['pmg_comment_title'] ) );
-	    		}
+				}
+				
+				// comment content
 	    		if( isset( $_POST['pmg_comment_content'] ) ) {
-	        		update_comment_meta( $comment_id, 'pmg_comment_content', esc_attr( $_POST['pmg_comment_content'] ) );
-	    		}
+	    			if ($_POST['pmg_comment_type'] == 'video') {
+	    				if (!isset($_POST['selected_video_audio']) || $_POST['selected_video_audio'] == '') {
+	    					wp_die('Please chooose a video');
+	    				}
+	    				$content = $_POST['selected_video_audio'];
+	    				update_comment_meta( $comment_id, 'pmg_comment_content', $content);
+	    			} else if ($_POST['pmg_comment_type'] == 'music') {
+	    				if (!isset($_POST['selected_video_audio']) || $_POST['selected_video_audio'] == '') {
+	    					wp_die('Please chooose a video');
+	    				}
+	    				$content = $_POST['selected_video_audio'];
+	    				update_comment_meta( $comment_id, 'pmg_comment_content', $content);
+	    			} else {
+	        			update_comment_meta( $comment_id, 'pmg_comment_content', esc_attr( $_POST['pmg_comment_content'] ) );
+	    			}
+				}
+				
+				// comment type
 	    		if( isset( $_POST['pmg_comment_type'] ) ) {
 	        		update_comment_meta( $comment_id, 'pmg_comment_type', esc_attr( $_POST['pmg_comment_type'] ) );
-	    		}
+				}
+				
+				// begin update comment with those custom fields
 	        	wp_update_comment(array(
 	        		'comment_ID' => $comment_id,
 	        		'comment_type' => 'reactie'
@@ -191,22 +252,7 @@ class Reactiesform {
 	}
 
 	/**
-	 * Hook in way late to avoid colliding with default
-	 * WordPress comment text filters
-	 */
-	public function pmg_comment_tut_add_title_to_text( $text, $comment )
-	{
-	    if( is_admin() ) return $text;
-	    if( $title = get_comment_meta( $comment->comment_ID, 'pmg_comment_title', true ) )
-	    {
-	        $title = '<h3>' . esc_attr( $title ) . '</h3>';
-	        $text = $title . $text;
-	    }
-	    return $text;
-	}
-
-	/**
-	 * add single template for reacties
+	 * add single template for cpt_condolances
 	 */
 	public function my_custom_template($template) {
 	    global $post;

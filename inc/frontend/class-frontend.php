@@ -99,29 +99,12 @@ class Frontend {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
-
-		wp_enqueue_script( 
-			$this->plugin_name,
-			plugin_dir_url( __FILE__ ) . 'js/nds-admin-form-demo-frontend.js', 
-			array( 'jquery' ), 
-			$this->version, 
-			false 
-		);
-
-		// wp_enqueue_script( 
-		// 	$this->plugin_name . '-youtube-auth',
-		// 	plugin_dir_url( __FILE__ ) . 'js/auth.js', 
-		// 	array( 'jquery' ), 
-		// 	$this->version, 
-		// 	true 
-		// );
-
 		wp_enqueue_script( 
 			$this->plugin_name . '-youtube-client',
 			'https://apis.google.com/js/client.js?onload=onClientLoad', 
 			array( 'jquery' ), 
 			$this->version, 
-			false 
+			true 
 		);
 
 		wp_enqueue_script( 
@@ -129,7 +112,7 @@ class Frontend {
 			'//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js', 
 			array( 'jquery' ), 
 			$this->version, 
-			false 
+			true 
 		);
 
 		wp_enqueue_script( 
@@ -137,9 +120,24 @@ class Frontend {
 			plugin_dir_url( __FILE__ ) . 'js/youtube-search.js', 
 			array( 'jquery' ), 
 			$this->version, 
-			false 
+			true 
+		);
+
+		wp_enqueue_script( 
+			$this->plugin_name . '-jquery-validate',
+			plugin_dir_url( __FILE__ ) . 'js/jquery.validate.min.js', 
+			array( 'jquery' ), 
+			$this->version, 
+			true 
+		);
+
+		wp_enqueue_script( 
+			$this->plugin_name,
+			plugin_dir_url( __FILE__ ) . 'js/nds-admin-form-demo-frontend.js', 
+			array( 'jquery' ), 
+			$this->version, 
+			true 
 		);
 
 	}
-
 }

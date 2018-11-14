@@ -1,3 +1,6 @@
+<?php
+?>
+
 <div id="comment-form-select-type">
 	<label>Add your comment or reminder with:</label>
 	<p>
@@ -23,46 +26,72 @@
 </div>
 
 <div id="second-reactie-step">
-	<div class="tahlil-input-wrapper" id="tahlil-word-input" style="display: none;">
+	<div class="tahlil-input-wrapper" id="tahlil-word-input">
 		<label for="pmg_comment_content">Words</label>
+		<a href="#" class="btn btn-sm btn-text btn-link btn-cancel-choose-type">Cancel</a>
 	</div>
 
-	<div class="tahlil-input-wrapper" id="tahlil-photos-input" style="display: none;">
+	<div class="tahlil-input-wrapper" id="tahlil-photos-input">
 		<label for="pmg_comment_content">Photos</label>
-		<input type="file" name="pmg_comment_photos[]">
+		<p>
+			<a href="#" class="btn btn-sm btn-text btn-link btn-cancel-choose-type">Cancel</a>
+		</p>
+		<p>
+        	<input id="attachment" name="attachment" type="file" />
+        </p>
 	</div>
 
-	<div class="tahlil-input-wrapper" id="tahlil-poetry-input" style="display: none;">
+	<div class="tahlil-input-wrapper" id="tahlil-poetry-input">
 		<label for="pmg_comment_content">Poetry</label>
+		<a href="#" class="btn btn-sm btn-text btn-link btn-cancel-choose-type">Cancel</a>
 	</div>
 
-	<div class="tahlil-input-wrapper" id="tahlil-music-input" style="display: none;">
+	<div class="tahlil-input-wrapper" id="tahlil-music-input">
 		<label for="pmg_comment_content">Music</label>
-		<input type="file" name="pmg_comment_videos[]">
+		<a href="#" class="btn btn-sm btn-text btn-link btn-cancel-choose-type">Cancel</a>
 	</div>
 
-	<div class="tahlil-input-wrapper" id="tahlil-video-input" style="display: none;">
+	<div class="tahlil-input-wrapper" id="tahlil-video-input">
 		<label for="pmg_comment_content">Video</label>
+		<a href="#" class="btn btn-sm btn-text btn-link btn-cancel-choose-type">Cancel</a>
+	</div>
 
+	<div id="youtube-searchbox">
 		<div class="search-videos">
-	  		<input type="text" value="" class="searchtext">
-	  		<button type="button" class="searchbutton">Find</button>
+	  		<input type="text" value="" placeholder="type a keyword" class="searchtext">
+	  		<button type="button" class="searchbutton">Search</button>
 	  	</div>
 	    
 	    <div class="youtube-loader"></div>
 	  	<div class="count"></div>
-
 	    <div class="snipp"></div>
-
-	    <button class="btn btn-primary" id="nextPageButton" style="display: none;">load more</button>
+	    <button class="btn btn-primary btn-sm nextPageButton" style="display: none; margin-bottom: 42px;">load more</button>
 	</div>
 
-	<div class="tahlil-input-wrapper" id="tahlil-quote-input" style="display: none;">
+	<div class="tahlil-input-wrapper" id="tahlil-quote-input">
 		<label for="pmg_comment_content">Quote</label>
+		<a href="#" class="btn btn-sm btn-text btn-link btn-cancel-choose-type">Cancel</a>
 	</div>
 
-	<textarea class="pmg_comment_content" name="pmg_comment_content" placeholder="Type here.." style="display: none;"></textarea>
+	
+	<div id="selected_video_audio_wrapper">
+		<p id="selected_video_audio_holder"></p>
+	</div>
+
+	<p class="comment-form-title">
+		<label for="pmg_comment_title">Title</label>
+    	<input type="text" aria-required="true" placeholder="Title..." name="pmg_comment_title" id="pmg_comment_title" />
+	</p>
+
+	<p class="comment-form-desc">
+		<label for="pmg_comment_content">Content</label>
+		<textarea class="pmg_comment_content" name="pmg_comment_content" placeholder="Your reaction here.."></textarea>
+	</p>
+
+	<input type="hidden" name="comment_type" value="reactie">
 	<input type="hidden" id="pmg_comment_type" name="pmg_comment_type">
+	<input type="hidden" id="selected_video_audio" name="selected_video_audio">
+	<input type="hidden" id="selected_video_audio_title" name="selected_video_audio_title">
 </div>
 
 <div style="margin-bottom: 20px;"></div>
@@ -80,73 +109,3 @@
 		width: 100%;
 	}*/
 </style>
-
-<script type="text/javascript">
-	jQuery( document ).ready(function($) {
-		$('.choose-reminder').on('click', function(e) {
-			e.preventDefault();
-			$('#pmg_comment_type').val($(this).attr('data-type'));
-			$('.pmg_comment_content').fadeIn();
-		})
-
-		$('#tahlil-word').on('click', function(e) {
-			$('#tahlil-photos-input').fadeOut();
-			$('#tahlil-poetry-input').fadeOut();
-			$('#tahlil-music-input').fadeOut();
-			$('#tahlil-video-input').fadeOut();
-			$('#tahlil-quote-input').fadeOut();
-			$('#tahlil-word-input').fadeIn();
-		});
-
-		$('#tahlil-photos').on('click', function(e) {
-			$('#tahlil-poetry-input').fadeOut();
-			$('#tahlil-music-input').fadeOut();
-			$('#tahlil-video-input').fadeOut();
-			$('#tahlil-quote-input').fadeOut();
-			$('#tahlil-word-input').fadeOut();
-			$('#tahlil-photos-input').fadeIn();
-
-			$('.pmg_comment_content').fadeOut();
-		});
-
-		$('#tahlil-poetry').on('click', function(e) {
-			$('#tahlil-photos-input').fadeOut();
-			$('#tahlil-music-input').fadeOut();
-			$('#tahlil-video-input').fadeOut();
-			$('#tahlil-quote-input').fadeOut();
-			$('#tahlil-word-input').fadeOut();
-			$('#tahlil-poetry-input').fadeIn();
-		});
-
-		$('#tahlil-music').on('click', function(e) {
-			$('#tahlil-photos-input').fadeOut();
-			$('#tahlil-poetry-input').fadeOut();
-			$('#tahlil-video-input').fadeOut();
-			$('#tahlil-quote-input').fadeOut();
-			$('#tahlil-word-input').fadeOut();
-			$('#tahlil-music-input').fadeIn();
-
-			$('.pmg_comment_content').fadeOut();
-		});
-
-		$('#tahlil-video').on('click', function(e) {
-			$('#tahlil-photos-input').fadeOut();
-			$('#tahlil-poetry-input').fadeOut();
-			$('#tahlil-music-input').fadeOut();
-			$('#tahlil-quote-input').fadeOut();
-			$('#tahlil-word-input').fadeOut();
-			$('#tahlil-video-input').fadeIn();
-
-			$('.pmg_comment_content').fadeOut();
-		});
-
-		$('#tahlil-quote').on('click', function(e) {
-			$('#tahlil-photos-input').fadeOut();
-			$('#tahlil-poetry-input').fadeOut();
-			$('#tahlil-music-input').fadeOut();
-			$('#tahlil-word-input').fadeOut();
-			$('#tahlil-video-input').fadeOut();
-			$('#tahlil-quote-input').fadeIn();
-		});
-	})
-</script>

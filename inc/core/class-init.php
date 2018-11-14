@@ -58,6 +58,8 @@ class Init {
 		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+
+		add_action('wp_head', array($this, 'head_script'));
 	}
 
 	/**
@@ -86,6 +88,24 @@ class Init {
 		$plugin_i18n = new Internationalization_i18n( $this->plugin_text_domain );
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+	}
+
+
+	/**
+	 * Add scripts to head
+	 */
+	public function head_script() {
+		$settings = new Admin\Settings($this->plugin_text_domain);
+		$data = $settings->getData();
+		$youtube_api_key = '';
+		if (isset($data['youtube_api_key'])) {
+			$youtube_api_key = $data['youtube_api_key'];
+		}
+		?>
+		<script type="text/javascript">
+			var tahlil_youtube_api_key = '<?php echo $youtube_api_key; ?>';
+		</script>
+		<?
 	}
 
 	/**
@@ -129,6 +149,9 @@ class Init {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		new Frontend\Reactiesform();
+		new Frontend\ReactiesList();
+		new Frontend\PmgCommentAttachment();
+		new Frontend\LightACandle($this->plugin_text_domain, $this->get_version());
 	}
 
 	/**
