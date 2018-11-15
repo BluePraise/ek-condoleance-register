@@ -40,7 +40,7 @@ function cpt_condolances() {
 		'label'                 => __( 'Condolance', 'tahlil' ),
 		'description'           => __( 'All of the memories lies with us', 'tahlil' ),
 		'labels'                => $labels,
-		'supports'              => array( 'title', 'editor', 'excerpt', 'thumbnail', 'comments', 'trackbacks', 'revisions', 'custom-fields' ),
+		'supports'              => array( 'title', 'editor', 'thumbnail', 'comments', 'trackbacks', 'revisions', 'custom-fields' ),
 		'hierarchical'          => false,
 		'public'                => true,
 		'show_ui'               => true,

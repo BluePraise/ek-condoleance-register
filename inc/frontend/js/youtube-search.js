@@ -15,6 +15,16 @@ jQuery(document).ready(function($) {
     $('.comment-form').addClass('reactie_selected_type');
   })
 
+  /**
+   *  Fix issue when searching videos then user hit enter button 
+   */
+  $('#attachmentForm').keydown((e) => {
+    if (e.keyCode === 13) {
+      e.preventDefault()
+      return false
+    }
+  })
+
   $('.btn-cancel-choose-type').click(function(e) {
     e.preventDefault();
     $('.comment-form').removeClass('reactie_selected_type');
@@ -54,6 +64,22 @@ jQuery(document).ready(function($) {
     $('.comment-form').toggleClass('reactie_selected_type_quote');
   });
 
+
+  /**
+   * ensure the video selected
+   */
+  $('#submit').click((e) => {
+    let type = $('#pmg_comment_type[name="pmg_comment_type"]').val()
+    let selectedAudioVideo = $('#selected_video_audio[name="selected_video_audio"]').val()
+    if ( type === 'video' || type === 'music') {
+      if (selectedAudioVideo === '' || !selectedAudioVideo) {
+        e.preventDefault()
+        $('.search-videos').append('<div class="error">Select video/music</div>')
+      } else {
+        $('#attachmentForm').submit()
+      }
+    }
+  })
 
   /**
    * Youtube stuffs
@@ -99,7 +125,7 @@ jQuery(document).ready(function($) {
     var request = gapi.client.youtube.search.list({
       part: 'snippet',
       q:searchText,
-      maxResults:5,
+      maxResults:15,
       pageToken:PageToken,
       type: 'video',
       videoEmbeddable: true

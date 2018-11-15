@@ -22,7 +22,7 @@ class Reactiesform {
 		add_action( 'comment_post', array($this, 'pmg_comment_tut_insert_comment'), 10, 1 );
 
 		// add single template for cpt_condolances
-		add_filter('single_template', array($this, 'my_custom_template'));
+		add_filter( 'single_template', array($this, 'my_custom_template') );
 
 		// enqueu
 		add_action( 'wp_enqueue_scripts', array( $this, 'tahlil_ajax_comments_scripts' ) );
@@ -118,30 +118,7 @@ class Reactiesform {
 	    	'normal', 
 	    	'high'
 	    );
-
-	    // add_meta_box('shiba_comment_xtra_box', __('Extra Arguments'), array($this, 'my_metabox'), 'comment', 'normal');
 	}
-
-	public function my_metabox($comment) {
-    ?>
-        <table class="form-table editcomment comment_xtra">
-        <tbody>
-        <tr valign="top">
-            <td class="first"><?php _e( 'Comment Post:' ); ?></td>
-            <td><input type="text" id="shiba_comment_post_ID" name="shiba_comment_post_ID" size="10" class="code" value="<?php echo esc_attr($comment->comment_post_ID); ?>" tabindex="1" /></td>
-        </tr>
-        <tr valign="top">
-            <td class="first"><?php _e( 'Comment Parent:' ); ?></td>
-            <td><input type="text" id="shiba_comment_parent" name="shiba_comment_parent" size="10" class="code" value="<?php echo esc_attr($comment->comment_parent); ?>" tabindex="1" /></td>
-        </tr>
-        <tr valign="top">
-            <td class="first"><?php _e( 'Author IP:' ); ?></td>
-            <td><input type="text" id="shiba_comment_author_IP" name="shiba_comment_author_IP" size="20" class="code" value="<?php echo esc_attr($comment->comment_author_IP); ?>" tabindex="1" /></td>
-        </tr>
-       </tbody>
-       </table>
-    <?php
-}
 
 	/**
 	 * Add custom metabox form comment form
@@ -149,6 +126,10 @@ class Reactiesform {
 	 */
 	public function pmg_comment_tut_meta_box_cb( $comment )
 	{
+		$current_screen = get_current_screen();
+		if (isset($current_screen->post_type) && $current_screen->post_type == 'cpt_condolances') {
+			echo '<style>.editcomment tr:nth-child(3) {display: none;}</style>';
+		}
 	    $title = get_comment_meta( $comment->comment_ID, 'pmg_comment_title', true );
 	    $type = get_comment_meta( $comment->comment_ID, 'pmg_comment_type', true );
 	    $content = get_comment_meta( $comment->comment_ID, 'pmg_comment_content', true );
@@ -222,13 +203,13 @@ class Reactiesform {
 	    		if( isset( $_POST['pmg_comment_content'] ) ) {
 	    			if ($_POST['pmg_comment_type'] == 'video') {
 	    				if (!isset($_POST['selected_video_audio']) || $_POST['selected_video_audio'] == '') {
-	    					wp_die('Please chooose a video');
+	    					wp_die('Please choose a video');
 	    				}
 	    				$content = $_POST['selected_video_audio'];
 	    				update_comment_meta( $comment_id, 'pmg_comment_content', $content);
 	    			} else if ($_POST['pmg_comment_type'] == 'music') {
 	    				if (!isset($_POST['selected_video_audio']) || $_POST['selected_video_audio'] == '') {
-	    					wp_die('Please chooose a video');
+	    					wp_die('Please choose a music video');
 	    				}
 	    				$content = $_POST['selected_video_audio'];
 	    				update_comment_meta( $comment_id, 'pmg_comment_content', $content);

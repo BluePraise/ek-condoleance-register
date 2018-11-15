@@ -31,6 +31,8 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 			'ajax'     => true //should this table support ajax?
 		] );
 
+		
+			
 		$this->plugin_text_domain = $plugin_text_domain;
 	}
 
@@ -431,19 +433,18 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 
 		$columns = array();
 
-		if ( $this->checkbox )
-			$columns['cb'] = '<input type="checkbox" />';
+		// if ( $this->checkbox )
+		// 	$columns['cb'] = '<input type="checkbox" />';
 
-		$columns['author'] = __( 'Author' );
-		$columns['comment'] = _x( 'Comment', 'column name' );
+			$columns['thumbnail'] = 'Thumbnail';
+			$columns['author'] = __( 'Author' );
+			$columns['comment'] = _x( 'Comment', 'column name' );
+			$columns['reactie_type'] = 'Type';
 
 		if ( ! $post_id ) {
-			/* translators: column name or table row header */
 			$columns['response'] = __( 'In Response To' );
 		}
-
 		$columns['date'] = _x( 'Submitted On', 'column name' );
-
 		return $columns;
 	}
 
@@ -618,7 +619,7 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 		}
 
 		if ( 'spam' !== $the_comment_status && 'trash' !== $the_comment_status ) {
-			$actions['edit'] = "<a href='comment.php?action=editcomment&amp;c={$comment->comment_ID}' aria-label='" . esc_attr__( 'Edit this comment' ) . "'>". __( 'Edit' ) . '</a>';
+			$actions['edit'] = "<a href='comment.php?action=editcomment&post_type=cpt_condolances&amp;c={$comment->comment_ID}' aria-label='" . esc_attr__( 'Edit this comment' ) . "'>". __( 'Edit' ) . '</a>';
 
 			$format = '<a data-comment-id="%d" data-post-id="%d" data-action="%s" class="%s" aria-label="%s" href="#">%s</a>';
 
@@ -667,6 +668,39 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 		}
 	}
 
+
+	/**
+	 *  Column Reactie Thumbnail
+	 */
+	public function column_thumbnail( $comment ) {
+		$type = get_comment_meta( $comment->comment_ID, 'pmg_comment_type', true );
+		$content_meta = get_comment_meta( $comment->comment_ID, 'pmg_comment_content', true );
+		$content = '';
+		if ($type == 'video' || $type == 'music') {
+				$content = '<a target="_blank" href="https://youtu.be/'.$content_meta.'"><img src="https://img.youtube.com/vi/'.$content_meta.'/1.jpg"/></a>';
+		} else if ($type == 'photos') {
+			$attachmentId = get_comment_meta( $comment->comment_ID, 'attachmentId', true );
+			if(is_numeric($attachmentId) && !empty($attachmentId)) {
+				// atachement info
+				$contentInner = wp_get_attachment_image($attachmentId, 'thumbnail');
+				$contentInnerFinal = '<a class="attachmentLink" target="_blank" href="'. admin_url() .'/upload.php?item='.$attachmentId.'">';
+				$contentInnerFinal .= $contentInner;
+				$contentInnerFinal .= '</a>';
+				// attachment comment position
+				$content = $contentInnerFinal;
+			}
+		}
+		echo $content;
+	}
+
+	/**
+	 * Column Reactie Type
+	 */
+	public function column_reactie_type( $comment ) {
+		$type = get_comment_meta( $comment->comment_ID, 'pmg_comment_type', true );
+		echo $type;
+	}
+
 	/**
 	 * @param WP_Comment $comment The comment object.
 	 */
@@ -697,7 +731,7 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 		?></textarea>
 		<div class="author-email"><?php echo esc_attr( $comment->comment_author_email ); ?></div>
 		<div class="author"><?php echo esc_attr( $comment->comment_author ); ?></div>
-		<div class="author-url"><?php echo esc_attr( $comment->comment_author_url ); ?></div>
+		<!-- <div class="author-url"><?php // echo esc_attr( $comment->comment_author_url ); ?></div> -->
 		<div class="comment_status"><?php echo $comment->comment_approved; ?></div>
 		</div>
 		<?php

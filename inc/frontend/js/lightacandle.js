@@ -34,6 +34,8 @@ jQuery(document).ready(function ($) {
                 $(that).removeAttr('disabled');
                 $(that).fadeOut();
                 $(document.body).css({'cursor': 'default'});
+                $('#light_a_candle_response').delay(2000).fadeOut("slow");
+
             }
         }).fail(function (error) {
             $(document.body).css({'cursor': 'default'});

@@ -12,6 +12,7 @@ class ReactiesList
 	{
         add_action( 'reactie_comment_content', array($this, 'reactie_comment_content') );
         add_filter( 'archive_template', array($this, 'get_archive_template') );
+        add_filter( 'comment_text',     array($this, 'displayAttachment'), 10, 3);
 	}
 
     /**
@@ -20,7 +21,6 @@ class ReactiesList
     public function reactie_comment_content()
     {
         add_action( 'comment_form_top',  array($this, 'displayBeforeForm') );
-        add_filter( 'comment_text',     array($this, 'displayAttachment'), 10, 3);
         add_filter( 'comment_text', array($this, 'pmg_comment_reactie_to_text'), 99, 2 );
     }
 
@@ -41,6 +41,8 @@ class ReactiesList
      */
     public function displayAttachment($comment)
     {
+        if (!is_admin()) return $comment;
+
         $attachmentId = get_comment_meta(get_comment_ID(), 'attachmentId', TRUE);
         if(is_numeric($attachmentId) && !empty($attachmentId)){
             // atachement info
@@ -53,19 +55,10 @@ class ReactiesList
             // let's do wrapper html
             $contentBefore  = '<div class="attachmentFile"><p>';
             $contentAfter   = '</p><div class="clear clearfix"></div></div>';
-
-            if(is_admin()){
-                $contentInner = $attachmentName;
-                $contentInnerFinal = '<a '.$attachmentRel.' class="attachmentLink" target="_blank" href="'. admin_url() .'/upload.php?item='.$attachmentId.'" title="Download: '. $attachmentName .'">';
-                $contentInnerFinal .= $contentInner;
-                $contentInnerFinal .= '</a>';
-            } else {
-                $attachmentRel = 'rel="lightbox"';
-                $contentInner = wp_get_attachment_image($attachmentId, 'full');
-                $contentInnerFinal = '<a '.$attachmentRel.' class="attachmentLink" target="_blank" href="'. $attachmentLink .'" title="Download: '. $attachmentName .'">';
-                $contentInnerFinal .= $contentInner;
-                $contentInnerFinal .= '</a>';
-            }
+            $contentInner = $attachmentName;
+            $contentInnerFinal = '<a '.$attachmentRel.' class="attachmentLink" target="_blank" href="'. admin_url() .'/upload.php?item='.$attachmentId.'" title="Download: '. $attachmentName .'">';
+            $contentInnerFinal .= $contentInner;
+            $contentInnerFinal .= '</a>';
 
             // bring a sellotape, this needs taping together
             $contentInsert = $contentBefore . $contentInnerFinal . $contentAfter;
@@ -89,11 +82,13 @@ class ReactiesList
         $content = '';
         $type = get_comment_meta( $comment->comment_ID, 'pmg_comment_type', true );
 
+        // title
         if (get_comment_meta( $comment->comment_ID, 'pmg_comment_title', true )) {
             $title = get_comment_meta( $comment->comment_ID, 'pmg_comment_title', true );
             $title = '<span class="reactie-heading">Title</span><p>' . esc_attr( $title ) . '</p>';
         }
 
+        // video or music
         if (get_comment_meta( $comment->comment_ID, 'pmg_comment_content', true )) {
             $content_meta = get_comment_meta( $comment->comment_ID, 'pmg_comment_content', true );
             $content = wpautop($content_meta);
@@ -105,7 +100,37 @@ class ReactiesList
             $content = '<div class="reactie-caption '.$type.'"><span class="reactie-heading">Content</span>' . $content . '</div>';
         }
 
-        $text = $title . $content . '<span class="reactie-heading">Message</span>'.$text;
+        // photo
+        if (get_comment_meta( $comment->comment_ID, 'attachmentId', true )) {
+            $attachmentId = get_comment_meta(get_comment_ID(), 'attachmentId', TRUE);
+            if ( is_numeric($attachmentId) && !empty($attachmentId) ) {
+                // atachement info
+                $attachmentLink = wp_get_attachment_url($attachmentId);
+                $attachmentMeta = wp_get_attachment_metadata($attachmentId);
+                $attachmentName = basename(get_attached_file($attachmentId));
+                $attachmentType = get_post_mime_type($attachmentId);
+                
+                // display
+                $contentBefore  = '<div class="attachmentFile">';
+                $contentAfter   = '</div>';
+                $attachmentRel = 'rel="lightbox"';
+                $contentInner = wp_get_attachment_image($attachmentId, 'full');
+                $contentInnerFinal = '<a '.$attachmentRel.' class="attachmentLink" target="_blank" href="'. $attachmentLink .'" title="Download: '. $attachmentName .'">';
+                $contentInnerFinal .= $contentInner;
+                $contentInnerFinal .= '</a>';
+
+                $content = $contentBefore . $contentInnerFinal . $contentAfter;
+
+                $content = '<div class="reactie-caption '.$type.'"><span class="reactie-heading">Content</span>' . $content . '</div>';
+            }
+        }
+
+        if ($type == 'quote' || $type == 'poetry' || $type == 'words') {
+            $text = '<div class="reactie-caption '.$type.'">' . $text . '</div>';               
+        }
+
+
+        $text = $title . $content . '<span class="reactie-heading">Message</span>'. $text;
         return $text;
     }
 

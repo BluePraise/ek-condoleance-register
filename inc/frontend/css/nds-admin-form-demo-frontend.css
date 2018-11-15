@@ -21,8 +21,21 @@
 	margin-bottom: 20px;
 }
 
+.snipp:after {
+	display: block;
+	content: '';
+	clear: both;
+}
+
 .search-video-item {
 	margin-bottom: 20px;
+	float: left;
+	width: 33.334%;
+	padding: 8px;
+}
+
+.search-video-item:nth-child(3n+1) {
+	clear: both;
 }
 
 .snipp iframe {
@@ -156,4 +169,19 @@
 	font-weight: bold;
 	color: #a9a9a9;
 	font-size: 11px;
+}
+
+.attachmentLink {
+	display: block;
+	line-height: 1;
+}
+
+.attachmentFile {
+	margin-top: 8px;
+}
+
+#attachmentForm div.error {
+	font-size: 12px;
+	color: red;
+	padding-top: 8px;
 }
