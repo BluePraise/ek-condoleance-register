@@ -28,7 +28,6 @@ if (!class_exists('PmgCommentAttachment')){
         {
             add_action('delete_comment',                array($this, 'deleteAttachment'));
             add_filter('comment_notification_text',     array($this, 'notificationText'), 10, 2);
-            // add_action('admin_init',                    array($this, 'adminInit'));
             $this->attachmentAction();
         }
 
@@ -135,7 +134,8 @@ if (!class_exists('PmgCommentAttachment')){
 
         public function checkAttachment($data)
         {
-            // wp_die(print_r($_FILES['attachment']));
+            if ($_POST['comment_parent'] > 0) return $data;
+
             if (isset($_POST['pmg_comment_type']) && $_POST['pmg_comment_type'] == 'photos') {
                 if (isset($_FILES) && isset($_FILES['attachment'])) {
                     if($_FILES['attachment']['size'] > 0 && $_FILES['attachment']['error'] == 0) {
@@ -151,7 +151,7 @@ if (!class_exists('PmgCommentAttachment')){
                         }
                         substr($fileType, 0, strrpos($fileType, ' '));
                         if (!in_array($fileType, $this->getAllowedMimeTypes()) ||  $_FILES['attachment']['size'] > (2 * 1048576)) {
-                            wp_die(sprintf(__('<strong>ERROR:</strong> File you upload must be valid file type <strong>(%1$s)</strong>, and under %2$sMB!','comment-attachment'),$this->displayAllowedFileTypes(),2));
+                            wp_die(sprintf(__('<strong>FOUT:</strong> Bestand dat u uploadt moet een geldig bestandstype zijn <strong>(%1$s)</strong>, en onder %2$sMB!','comment-attachment'),$this->displayAllowedFileTypes(),2));
                         }
                     } elseif ($_FILES['attachment']['error'] == 4) {
                         wp_die(__('<strong>ERROR:</strong> Attachment is a required field!','comment-attachment'));
@@ -210,15 +210,57 @@ if (!class_exists('PmgCommentAttachment')){
          */
 
         public function saveAttachment($commentId)
-        {   
-            if (isset($_FILES) && isset($_FILES['attachment'])) {
-                if($_FILES['attachment']['size'] > 0){
-                    $bindId = $_POST['comment_post_ID'];
-                    $attachId = $this->insertAttachment('attachment', $bindId);
-                    add_comment_meta($commentId, 'attachmentId', $attachId);
-                    unset($_FILES);
+        {
+            if ($_POST['comment_parent'] > 0) return $commentId;
+
+            // if (isset($_FILES) && isset($_FILES['attachment'])) {
+            //     if($_FILES['attachment']['size'] > 0){
+            //         $bindId = $_POST['comment_post_ID'];
+            //         $attachId = $this->insertAttachment('attachment', $bindId);
+            //         add_comment_meta($commentId, 'attachmentId', $attachId);
+            //         unset($_FILES);
+            //     }
+            // }
+
+            if( ! empty( $_FILES ) ) {
+                foreach( $_FILES as $file ) {
+                    if( is_array( $file ) ) {
+                        $attachment_id = $this->upload_file_user( $file );
+                        add_comment_meta($commentId, 'attachmentId', $attachment_id);
+                    }
                 }
             }
+        }
+
+        /**
+         * upload files another way
+         */
+        public function upload_file_user( $file = array() ) {
+            require_once( ABSPATH . 'wp-admin/includes/admin.php' );
+
+            $file_return = wp_handle_upload( $file, array('test_form' => false ) );
+            if( isset( $file_return['error'] ) || isset( $file_return['upload_error_handler'] ) ) {
+                return false;
+            } else {
+                $filename = $file_return['file'];
+                $attachment = array(
+                    'post_mime_type' => $file_return['type'],
+                    'post_title' => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
+                    'post_content' => '',
+                    'post_status' => 'inherit',
+                    'guid' => $file_return['url']
+                );
+                $attachment_id = wp_insert_attachment( $attachment, $file_return['file'] );
+
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                $attachment_data = wp_generate_attachment_metadata( $attachment_id, $filename );
+                wp_update_attachment_metadata( $attachment_id, $attachment_data );
+
+                if( 0 < intval( $attachment_id ) ) {
+                    return $attachment_id;
+                }
+            }
+            return false;
         }
 
         /**

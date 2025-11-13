@@ -6,13 +6,13 @@ var searchbuttonType = '';
 
 jQuery(document).ready(function($) {
   /** 
-    * UI STUFFS
+    * UI STUFF
     */
   $('.choose-reminder').on('click', function(e) {
     e.preventDefault();
     $('#pmg_comment_type').val($(this).attr('data-type'));
     $('.pmg_comment_content').fadeIn();
-    $('.comment-form').addClass('reactie_selected_type');
+    $('.comment-form').toggleClass('reactie_selected_type');
   })
 
   /**
@@ -41,27 +41,27 @@ jQuery(document).ready(function($) {
   })
 
   $('#tahlil-word').on('click', function(e) {
-    $('.comment-form').toggleClass('reactie_selected_type_word');
+    $('.comment-form').removeClass('reactie_selected_type_photos reactie_selected_type_poetry reactie_selected_type_music reactie_selected_type_video reactie_selected_type_quote').toggleClass('reactie_selected_type_word');
   });
 
   $('#tahlil-photos').on('click', function(e) {
-    $('.comment-form').toggleClass('reactie_selected_type_photos');
+    $('.comment-form').removeClass('reactie_selected_type_word reactie_selected_type_poetry reactie_selected_type_music reactie_selected_type_video reactie_selected_type_quote').toggleClass('reactie_selected_type_photos');
   });
 
   $('#tahlil-poetry').on('click', function(e) {
-    $('.comment-form').toggleClass('reactie_selected_type_poetry');
+    $('.comment-form').removeClass('reactie_selected_type_word reactie_selected_type_photos reactie_selected_type_music reactie_selected_type_video reactie_selected_type_quote').toggleClass('reactie_selected_type_poetry');
   });
 
   $('#tahlil-music').on('click', function(e) {
-    $('.comment-form').toggleClass('reactie_selected_type_music');
+    $('.comment-form').removeClass('reactie_selected_type_word reactie_selected_type_photos reactie_selected_type_poetry reactie_selected_type_video reactie_selected_type_quote').toggleClass('reactie_selected_type_music');
   });
 
   $('#tahlil-video').on('click', function(e) {
-    $('.comment-form').toggleClass('reactie_selected_type_video');
+    $('.comment-form').removeClass('reactie_selected_type_word reactie_selected_type_photos reactie_selected_type_poetry reactie_selected_type_music reactie_selected_type_quote').toggleClass('reactie_selected_type_video');
   });
 
   $('#tahlil-quote').on('click', function(e) {
-    $('.comment-form').toggleClass('reactie_selected_type_quote');
+    $('.comment-form').removeClass('reactie_selected_type_word reactie_selected_type_photos reactie_selected_type_poetry reactie_selected_type_music reactie_selected_type_video').toggleClass('reactie_selected_type_quote');
   });
 
 
@@ -74,7 +74,7 @@ jQuery(document).ready(function($) {
     if ( type === 'video' || type === 'music') {
       if (selectedAudioVideo === '' || !selectedAudioVideo) {
         e.preventDefault()
-        $('.search-videos').append('<div class="error">Select video/music</div>')
+        $('.search-videos').append('<div class="error">Selecteer een video of muziek alstublieft.</div>')
       } else {
         $('#attachmentForm').submit()
       }
@@ -120,7 +120,7 @@ jQuery(document).ready(function($) {
     if (searchText == '') {
       searchText = 'memories';
     }
-    $('.youtube-loader').html("<div id=\"searching\"><b>Searching for "+searchText+"</b></div>");
+    $('.youtube-loader').html("<div id=\"searching\">Op zoek naar <b>"+searchText+"</b></div>");
 
     var request = gapi.client.youtube.search.list({
       part: 'snippet',
@@ -155,7 +155,7 @@ jQuery(document).ready(function($) {
         var thumbnails_high = response.items[i].snippet.thumbnails.high.url;
         var videoID = response.items[i].id.videoId;
         var videoIframe = '<iframe width="240" height="auto" src="https://www.youtube.com/embed/'+videoID+'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-        var buttonSelectVideo = '<a href="#" id="btn-select-video-'+videoID+'" class="btn-select-video btn-sm btn-info" data-video="'+videoID+'" data-title="'+response.items[i].snippet.title+'">Select this video</a>';
+        var buttonSelectVideo = '<a href="#" id="btn-select-video-'+videoID+'" class="btn-select-video btn-sm btn-info" data-video="'+videoID+'" data-title="'+response.items[i].snippet.title+'">Kiezen</a>';
 
         $('.snipp').append('<div class="search-video-item">'+videoIframe+title+buttonSelectVideo+'</div>');
 
@@ -169,7 +169,7 @@ jQuery(document).ready(function($) {
         });
       }
     } else {
-      $('.youtube-loader').html("<div id=\"searching\"><b>no videos found</b></div>");
+      $('.youtube-loader').html("<div id=\"searching\">Geen video of muziek gevonden.</div>");
     }
   }
 

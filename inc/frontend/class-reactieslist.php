@@ -11,7 +11,7 @@ class ReactiesList
 	public function __construct()
 	{
         add_action( 'reactie_comment_content', array($this, 'reactie_comment_content') );
-        add_filter( 'archive_template', array($this, 'get_archive_template') );
+        // add_filter( 'archive_template', array($this, 'get_archive_template') );
         add_filter( 'comment_text',     array($this, 'displayAttachment'), 10, 3);
 	}
 
@@ -64,10 +64,11 @@ class ReactiesList
             $contentInsert = $contentBefore . $contentInnerFinal . $contentAfter;
 
             // attachment comment position
-            $comment = $contentInsert . $comment;
+            $comment = $contentInsert . substr($comment, 0,20);
+            return $comment;
         }
 
-        return $comment;
+        return substr($comment, 0,20);
     }
 
     /**
@@ -77,6 +78,7 @@ class ReactiesList
     public function pmg_comment_reactie_to_text( $text, $comment )
     {
         if ( is_admin() ) return $text;
+        if ( $comment->comment_parent > 0 ) return $text;
 
         $title = '';
         $content = '';
@@ -85,7 +87,7 @@ class ReactiesList
         // title
         if (get_comment_meta( $comment->comment_ID, 'pmg_comment_title', true )) {
             $title = get_comment_meta( $comment->comment_ID, 'pmg_comment_title', true );
-            $title = '<span class="reactie-heading">Title</span><p>' . esc_attr( $title ) . '</p>';
+            $title = '<span class="reactie-heading">Titel</span><p>' . esc_attr( $title ) . '</p>';
         }
 
         // video or music
@@ -97,7 +99,7 @@ class ReactiesList
                 $content = '<iframe width="300" height="200" src="https://www.youtube.com/embed/'.$content_meta.'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             }
 
-            $content = '<div class="reactie-caption '.$type.'"><span class="reactie-heading">Content</span>' . $content . '</div>';
+            $content = '<div class="reactie-caption '.$type.'">' . $content . '</div>';
         }
 
         // photo
@@ -121,7 +123,7 @@ class ReactiesList
 
                 $content = $contentBefore . $contentInnerFinal . $contentAfter;
 
-                $content = '<div class="reactie-caption '.$type.'"><span class="reactie-heading">Content</span>' . $content . '</div>';
+                $content = '<div class="reactie-caption '.$type.'">' . $content . '</div>';
             }
         }
 
@@ -130,7 +132,7 @@ class ReactiesList
         }
 
 
-        $text = $title . $content . '<span class="reactie-heading">Message</span>'. $text;
+        $text = $title . $content . '<span class="reactie-heading">Bericht</span>'. $text;
         return $text;
     }
 

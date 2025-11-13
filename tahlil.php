@@ -8,12 +8,12 @@
  * that starts the plugin.
  *
  * @wordpress-plugin
- * Plugin Name:       Tahlil
- * Plugin URI:        https://makmalf.com
- * Description:       Tahlil is a prayer
+ * Plugin Name:       Condoleance Register
+ * Plugin URI:        https://www.envisionwebdesign.nl
+ * Description:       -
  * Version:           1.0.0
- * Author:            MAKMALF
- * Author URI:        https://makmalf.com
+ * Author:            Muhammad Uzair Usman
+ * Author URI:        https://www.envisionwebdesign.nl *
  * License:           -
  * License URI:       -
  * Text Domain:       tahlil
@@ -71,6 +71,13 @@ require_once( PLUGIN_NAME_DIR . 'inc/libraries/cmb2/init.php' );
 require_once( PLUGIN_NAME_DIR . 'inc/post-types/cpt_condolances.php' );
 
 /**
+ * Register Shortcode
+ */
+require_once( PLUGIN_NAME_DIR . 'inc/shortcodes/condolances.php' );
+require_once( PLUGIN_NAME_DIR . 'inc/shortcodes/lightacandle.php' );
+require_once( PLUGIN_NAME_DIR . 'inc/shortcodes/condolances-meta.php' );
+
+/**
  * Plugin Singleton Container
  *
  * Maintains a single copy of the plugin app object
@@ -109,27 +116,41 @@ class Tahlil {
  *
  */
 function tahlil_init() {
-		add_filter( 'comments_array', 'array_reverse' );
+		// since it's buggy, we keep it yet till the wordpress core fixed it.
+		// add_filter ('comments_array', function($comments) {
+  //       	return array_reverse($comments);
+  //   	});
+		// add_filter( 'comments_array', 'array_reverse' );
 
+		// comment cookies, for security sake, 
 		add_action( 'set_comment_cookies', function( $comment, $user ) {
 			setcookie( 'ta_comment_wait_approval', '1', 0, '/' );
 		}, 10, 2 );
 
+		// comment success message
 		add_action( 'init', function() {
 			if( isset( $_COOKIE['ta_comment_wait_approval'] ) && $_COOKIE['ta_comment_wait_approval'] === '1' ) {
-					setcookie( 'ta_comment_wait_approval', '0', 0, '/' );
-					add_action( 'comment_form_before', function() {
-							echo "<p id='wait_approval' style='padding-top: 40px;'>
-							<strong>
-							Je reactie is goed ontvangen. Het zal snel na de administratieve beoordeling worden gepubliceerd. Dank je!
-							</strong>
-							</p>";
-					});
+				setcookie( 'ta_comment_wait_approval', '0', 0, '/' );
+				add_action( 'comment_form_before', function() {
+					if (is_singular('cpt_condolances')) {
+						echo "<div id='success-message-wrapper'>
+								<div id='wait_approval'>
+									Uw reactie is goed ontvangen en zal snel na de administratieve beoordeling worden gepubliceerd. Bedankt namens de nabestaanden!
+								</div>
+							</div>";
+					} else {
+						echo "<div id='success-message-wrapper'>
+								<div id='wait_approval'>
+									Je reactie is geplaatst.
+								</div>
+							</div>";
+					}
+				});
 			}
 		});
 
 		add_filter( 'comment_post_redirect', function( $location, $comment ) {
-			$location = get_permalink( $comment->comment_post_ID ) . '#wait_approval';
+			$location = get_permalink( $comment->comment_post_ID ) . '#success-message-wrapper';
 			return $location;
 		}, 10, 2 );
 

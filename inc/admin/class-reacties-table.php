@@ -432,14 +432,10 @@ class Reacties_Table extends Libraries\WP_List_Table  {
 		global $post_id;
 
 		$columns = array();
-
-		// if ( $this->checkbox )
-		// 	$columns['cb'] = '<input type="checkbox" />';
-
-			$columns['thumbnail'] = 'Thumbnail';
 			$columns['author'] = __( 'Author' );
-			$columns['comment'] = _x( 'Comment', 'column name' );
 			$columns['reactie_type'] = 'Type';
+			$columns['thumbnail'] = 'Thumbnail';
+			$columns['comment'] = _x( 'Comment', 'column name' );
 
 		if ( ! $post_id ) {
 			$columns['response'] = __( 'In Response To' );

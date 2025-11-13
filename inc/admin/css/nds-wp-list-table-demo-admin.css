@@ -4,6 +4,10 @@
  * The file is enqueued from inc/admin/class-admin.php.
  */
 
+th.column-reactie_type {
+	width: 100px;
+}
+
  th#thumbnail {
  	width: 100px;
  }

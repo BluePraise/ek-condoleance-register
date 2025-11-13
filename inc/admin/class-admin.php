@@ -92,13 +92,13 @@ class Admin {
 	 */
 	public function add_plugin_admin_menu() {
 				
-		$page_hook = add_users_page( 
-						__( 'WP List Table Demo', $this->plugin_text_domain ), //page title
-						__( 'WP List Table Demo', $this->plugin_text_domain ), //menu title
-						'manage_options', //capability
-						$this->plugin_name, //menu_slug,
-						array( $this, 'load_user_list_table' )
-					);
+		// $page_hook = add_users_page( 
+		// 				__( 'WP List Table Demo', $this->plugin_text_domain ), //page title
+		// 				__( 'WP List Table Demo', $this->plugin_text_domain ), //menu title
+		// 				'manage_options', //capability
+		// 				$this->plugin_name, //menu_slug,
+		// 				array( $this, 'load_user_list_table' )
+		// 			);
 		
 		/*
 		 * The $page_hook_suffix can be combined with the load-($page_hook) action hook
@@ -107,7 +107,7 @@ class Admin {
 		 * The callback below will be called when the respective page is loaded
 		 * 		 
 		 */				
-		add_action( 'load-'.$page_hook, array( $this, 'load_user_list_table_screen_options' ) );
+		// add_action( 'load-'.$page_hook, array( $this, 'load_user_list_table_screen_options' ) );
 	}
 	
 	/**

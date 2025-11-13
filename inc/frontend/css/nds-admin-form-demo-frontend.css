@@ -4,70 +4,131 @@
  * The file is enqueued from inc/frontend/class-frontend.php.
  */
 
+.person-hentry {
+    margin-bottom: 42px;
+    position: relative;
+    /*border: 1px solid #e9e9e9;*/
+}
+
+.person-hentry-main {
+    padding: 12px 12px 12px 170px;
+}
+
+.person-thumb {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 150px;
+}
+
+.person-hentry .entry-title {
+    margin-top: 0;
+}
+
+.person-meta ul {
+    list-style-type: none;
+    margin-left: 0;
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
+}
+
+.person-meta {
+    font-size: 11px;
+    margin-bottom: 20px;
+}
+
 #comment-form-select-type .btn {
-	margin-bottom: 8px;
-	margin-right: 4px;
-	margin-left: 0;
-	line-height: 1;
+margin-bottom: 8px;
+margin-right: 4px;
+margin-left: 0;
+line-height: 1;
 }
 
 .search-videos input[type="text"] {
-	width: 300px;
-	display: inline-block;
+width: 300px;
+display: inline-block;
 }
 
 .snipp {
-	margin-top: 20px;
-	margin-bottom: 20px;
+margin-top: 20px;
+margin-bottom: 20px;
 }
 
 .snipp:after {
-	display: block;
-	content: '';
-	clear: both;
+display: block;
+content: '';
+clear: both;
 }
 
 .search-video-item {
-	margin-bottom: 20px;
-	float: left;
-	width: 33.334%;
-	padding: 8px;
+margin-bottom: 20px;
+float: left;
+width: 33.334%;
+padding: 8px;
 }
 
 .search-video-item:nth-child(3n+1) {
-	clear: both;
+clear: both;
 }
 
 .snipp iframe {
-	margin-bottom: 0px;
+margin-bottom: 0px;
 }
 
 .btn-select-video {
-	font-size: 12px;
-	line-height: 1;
-	padding: 8px 12px;
-	border: 1px solid #ccc;
+font-size: 12px;
+line-height: 1;
+padding: 8px 12px;
+border: 1px solid #ccc;
 }
 
 .video-title {
-	font-weight: bold;
-	margin-bottom: 8px;
+font-weight: bold;
+margin-bottom: 8px;
 }
 
 .nextPageButton {
-	line-height: 1;
-	padding: 8px 12px;
-	font-weight: normal;
-	font-size: 12px;
+line-height: 1;
+padding: 8px 12px;
+font-weight: normal;
+font-size: 12px;
 }
 
 #youtube-searchbox {
-	display: none;
+display: none;
+}
+
+.comment-form-message {
+display: none !important;
+}
+
+.attachmentFile img {
+    max-width: 100% !important;
+    height: auto !important;
 }
 
 /* .single-cpt_condolances .reply {
-	display: none !important;
+display: none !important;
 } */
+
+
+.single-cpt_condolances li .comment-form-comment,
+.single-cpt_condolances li .comment-form-author,
+.single-cpt_condolances li .comment-form-email, 
+.single-cpt_condolances li .form-submit {
+    display: block;
+}
+
+.single-cpt_condolances .comment-list #comment-form-select-type {
+    display: none;
+}
+
+.single-cpt_condolances .comment-list .comment-form-comment,
+.single-cpt_condolances .comment-list .comment-form-author,
+.single-cpt_condolances .comment-list .comment-form-email, 
+.single-cpt_condolances .comment-list .form-submit {
+    display: block;
+}
 
 .single-cpt_condolances .comment-form-title,
 .single-cpt_condolances .comment-form-comment,
@@ -79,11 +140,7 @@
 .single-cpt_condolances .tahlil-input-wrapper,
 .single-cpt_condolances .comment-form-desc,
 .single-cpt_condolances .comment-notes {
-	display: none;
-}
-
-.reactie_selected_type #comment-form-select-type {
-	display: none;
+    display: none;
 }
 
 .single-cpt_condolances .reactie_selected_type_video #youtube-searchbox,
@@ -94,23 +151,23 @@
 .single-cpt_condolances .reactie_selected_type_quote .tahlil-input-wrapper#tahlil-quote-input,
 .single-cpt_condolances .reactie_selected_type_photos .tahlil-input-wrapper#tahlil-photos-input,
 .single-cpt_condolances .reactie_selected_type_word .tahlil-input-wrapper#tahlil-word-input {
-	display: block;
+    display: block;
 }
 
 .single-cpt_condolances .reactie_selected_type_video.video-selected #youtube-searchbox,
 .single-cpt_condolances .reactie_selected_type_music.video-selected #youtube-searchbox {
-	display: none;
+    display: none;
 }
 
 .single-cpt_condolances .reactie_selected_type_photos .comment-form-desc {
-	display: block;
+    display: block;
 }
 
 .single-cpt_condolances .reactie_selected_type_quote .comment-form-desc,
 .single-cpt_condolances .reactie_selected_type_photos .comment-form-desc,
 .single-cpt_condolances .reactie_selected_type_poetry .comment-form-desc,
 .single-cpt_condolances .reactie_selected_type_word .comment-form-desc {
-	display: none;
+    display: none;
 }
 
 .single-cpt_condolances .reactie_selected_type .comment-form-title,
@@ -119,69 +176,87 @@
 .single-cpt_condolances .reactie_selected_type .comment-form-url,
 .single-cpt_condolances .reactie_selected_type .comment-form-email, 
 .single-cpt_condolances .reactie_selected_type .form-submit {
-	display: block;
+display: block;
 }
 
 .tahlil-input-wrapper {
-	position: relative;
+position: relative;
 }
 
 .btn-cancel-choose-type {
-	position: absolute;
-	top: 0;
-	right: 0;
-	border: 1px solid #f9f9f9;
-	background: #e9e9e9;
-	font-size: 12px;
-	padding: 8px 12px;
-	display: inline-block;
-	margin: 8px 0;
+position: absolute;
+top: 0;
+right: 0;
+border: 1px solid #f9f9f9;
+background: #e9e9e9;
+font-size: 12px;
+padding: 8px 12px;
+display: inline-block;
+margin: 8px 0;
 }
 
 .reactie-caption {
-	margin-bottom: 20px;
+margin-bottom: 20px;
 }
 
 .reactie-caption.quote {
-	font-size: 20px;
-	position: relative;
-	padding-left: 20px;
+font-size: 20px;
+position: relative;
+padding-left: 20px;
+margin-top: 18px;
 }
 
 .reactie-caption.quote:before {
-	content: '"';
-	font-size: 32px;
-	font-weight: bold;
-	position: absolute;
-	top: -10px;
-	left: 0;
+content: '"';
+font-size: 32px;
+font-weight: bold;
+position: absolute;
+top: -10px;
+left: 0;
 }
 
-.reactie-caption.poetry {
-	padding: 20px 20px 10px;
-	background: rgba(245, 237, 105, 0.2);
-	border-radius: 8px;
-	box-shadow: 0 8px 20px -5px rgba(0,0,0,0.2)
-}
 
 .reactie-heading {
-	display: block;
-	font-weight: bold;
-	color: #a9a9a9;
-	font-size: 11px;
+display: block;
+font-weight: bold;
+color: #a9a9a9;
+font-size: 11px;
 }
 
 .attachmentLink {
-	display: block;
-	line-height: 1;
+display: block;
+line-height: 1;
+text-decoration: none;
 }
 
 .attachmentFile {
-	margin-top: 8px;
+margin-top: 8px;
+}
+
+#attachmentForm input[type="text"],
+#attachmentForm input[type="email"] {
+    height: 40px;
 }
 
 #attachmentForm div.error {
-	font-size: 12px;
-	color: red;
-	padding-top: 8px;
+    font-size: 12px;
+    color: red;
+    padding-top: 8px;
+}
+
+.comment-content a.attachmentLink,
+.comment-content a.attachmentLink:hover {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    -ms-box-shadow: none;
+}
+
+#success-message-wrapper {
+    padding-top: 140px;
+    margin-bottom: 40px;
+}
+
+.wpb_text_column .summary ul li:before {
+    display: none;
 }

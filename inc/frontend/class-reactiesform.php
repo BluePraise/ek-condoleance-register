@@ -79,8 +79,8 @@ class Reactiesform {
 	{
 		$defaults = '
 		<p class="comment-form-comment">
-			<label for="comment">Message</label>
-			<textarea placeholder="message..." id="comment" name="comment" aria-required="true"></textarea>
+			<!--label for="comment">Bericht</label-->
+			<textarea id="comment" name="comment" aria-required="true"></textarea>
 		</p>';
    
 		return $defaults;
@@ -192,8 +192,11 @@ class Reactiesform {
 	 */
 	public function pmg_comment_tut_insert_comment( $comment_id )
 	{
+		if ($_POST['comment_parent'] > 0) return $comment_id;
+
 	    if( isset( $_POST['comment_type'] ) ) {
 	    	if ($_POST['comment_type'] == 'reactie') {
+
 				// comment title
 	    		if( isset( $_POST['pmg_comment_title'] ) ) {
 	        		update_comment_meta( $comment_id, 'pmg_comment_title', esc_attr( $_POST['pmg_comment_title'] ) );

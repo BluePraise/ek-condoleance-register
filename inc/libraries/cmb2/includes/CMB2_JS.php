@@ -197,7 +197,7 @@ class CMB2_JS {
 				'date_picker'  => array(
 					'changeMonth'     => true,
 					'changeYear'      => true,
-					'dateFormat'      => _x( 'mm/dd/yy', 'Valid formatDate string for jquery-ui datepicker', 'cmb2' ),
+					'dateFormat'      => _x( 'dd/mm/yy', 'Valid formatDate string for jquery-ui datepicker', 'cmb2' ),
 					'dayNames'        => explode( ',', esc_html__( 'Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday', 'cmb2' ) ),
 					'dayNamesMin'     => explode( ',', esc_html__( 'Su, Mo, Tu, We, Th, Fr, Sa', 'cmb2' ) ),
 					'dayNamesShort'   => explode( ',', esc_html__( 'Sun, Mon, Tue, Wed, Thu, Fri, Sat', 'cmb2' ) ),
