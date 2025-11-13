@@ -1,0 +1,30 @@
+/* Condoleance Register - Frontend Styles */
+
+.condoleance-register-list {
+    margin: 2rem 0;
+}
+
+.condoleance-candle-widget {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.condoleance-candle-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #d63638;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.condoleance-candle-button:hover {
+    background: #b32d2e;
+}
+
+.condoleance-candle-count {
+    font-size: 1.2em;
+    margin: 1rem 0;
+}
