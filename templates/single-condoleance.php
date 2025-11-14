@@ -51,7 +51,7 @@ while (have_posts()) :
 
         <?php if (has_post_thumbnail()) : ?>
             <div class="condoleance-featured-image">
-                <?php the_post_thumbnail('large', ['class' => 'memorial-photo']); ?>
+                <?php the_post_thumbnail('full-width', ['class' => 'memorial-photo']); ?>
             </div>
         <?php endif; ?>
 
@@ -61,6 +61,7 @@ while (have_posts()) :
 
         <?php if (!empty($photos) && is_array($photos)) : ?>
             <div class="condoleance-gallery">
+            <h2 class="gallery-title"><?php esc_html_e('Fotogalerij', 'condoleance-register'); ?></h2>
             <?php // if there is only one photo, apply a different class ?>
                 <div class="<?php echo count($photos) === 1 ? 'gallery single-photo' : 'gallery-grid multiple-photos'; ?>">
                     <?php foreach ($photos as $photo_id => $photo_url) : ?>
