@@ -86,6 +86,8 @@ final class Plugin
         add_action('init', [$this, 'init_components'], 0);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
+        add_filter('single_template', [$this, 'load_single_template']);
+        add_filter('archive_template', [$this, 'load_archive_template']);
     }
 
     /**
@@ -118,8 +120,17 @@ final class Plugin
      */
     public function enqueue_frontend_assets(): void
     {
-        // Only load on relevant pages.
-        if (!is_singular('condoleance') && !is_post_type_archive('condoleance')) {
+        global $post;
+
+        // Load on condoleance pages or pages with shortcodes.
+        $should_load = is_singular('condoleance')
+            || is_post_type_archive('condoleance')
+            || (is_a($post, 'WP_Post') && (
+                has_shortcode($post->post_content, 'condoleance_register')
+                || has_shortcode($post->post_content, 'light_a_candle')
+            ));
+
+        if (!$should_load) {
             return;
         }
 
@@ -178,6 +189,44 @@ final class Plugin
             CONDOLEANCE_REGISTER_VERSION,
             true
         );
+    }
+
+    /**
+     * Load single condoleance template.
+     *
+     * @since 2.0.0
+     * @param string $template Template path.
+     * @return string Modified template path.
+     */
+    public function load_single_template(string $template): string
+    {
+        if (is_singular('condoleance')) {
+            $plugin_template = CONDOLEANCE_REGISTER_PATH . 'templates/single-condoleance.php';
+            if (file_exists($plugin_template)) {
+                return $plugin_template;
+            }
+        }
+
+        return $template;
+    }
+
+    /**
+     * Load archive condoleance template.
+     *
+     * @since 2.0.0
+     * @param string $template Template path.
+     * @return string Modified template path.
+     */
+    public function load_archive_template(string $template): string
+    {
+        if (is_post_type_archive('condoleance')) {
+            $plugin_template = CONDOLEANCE_REGISTER_PATH . 'templates/archive-condoleance.php';
+            if (file_exists($plugin_template)) {
+                return $plugin_template;
+            }
+        }
+
+        return $template;
     }
 
     /**

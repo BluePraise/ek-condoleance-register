@@ -8,14 +8,26 @@ Complete rewrite of the Tahlil plugin with modern WordPress standards, PHP 8.0+ 
 
 ## Features
 
-- **Custom Post Type**: Dedicated condoleance/memorial pages
-- **Virtual Candles**: Visitors can light virtual candles in memory
-- **Photo Galleries**: Multiple photos per memorial
+### Core Functionality
+- **Custom Post Type**: Dedicated condoleance/memorial pages with custom fields
+- **Virtual Candles**: AJAX-powered candle lighting with real-time updates
+- **Photo Galleries**: Multiple photos per memorial using CMB2
 - **Condolence Comments**: Custom comment system for condolence messages
 - **Data Migration**: Seamless migration from old Tahlil plugin
+
+### Frontend Display
+- **Custom Templates**: Beautiful single and archive templates
+- **Shortcodes**: Two powerful shortcodes for displaying memorials and candle widgets
+  - `[condoleance_register]` - Grid/list display with pagination
+  - `[light_a_candle]` - Interactive candle widget
+- **Responsive Design**: Mobile-first, fully responsive layouts
+- **Pagination**: Built-in pagination for archives and shortcodes
+
+### Technical
 - **REST API**: Modern REST API endpoints for AJAX interactions
-- **Block Editor Support**: Full Gutenberg compatibility
 - **Security First**: Proper nonce verification, input sanitization, and output escaping
+- **PHP 8.0+**: Modern PHP with strict typing and best practices
+- **Block Editor Support**: Full Gutenberg compatibility
 - **GDPR Compliant**: IP anonymization and privacy-focused
 
 ## Requirements
@@ -30,6 +42,42 @@ Complete rewrite of the Tahlil plugin with modern WordPress standards, PHP 8.0+ 
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. If migrating from Tahlil, follow the migration prompts
 
+## Usage
+
+### Creating a Memorial
+
+1. Go to **Condoleance Register** → **Add New** in WordPress admin
+2. Enter the person's name as the title
+3. Fill in birth and death dates
+4. Add memorial text in the content editor
+5. Set a featured image (memorial photo)
+6. Add additional photos to the gallery
+7. Publish
+
+### Using Shortcodes
+
+See [SHORTCODES.md](SHORTCODES.md) for complete documentation.
+
+**Display a grid of memorials:**
+```
+[condoleance_register per_page="9" columns="3"]
+```
+
+**Add a candle widget:**
+```
+[light_a_candle post_id="123" show_names="yes"]
+```
+
+### Templates
+
+The plugin includes custom templates that automatically apply to:
+- Single condoleance pages: `templates/single-condoleance.php`
+- Condoleance archives: `templates/archive-condoleance.php`
+
+To override these templates in your theme, copy them to:
+- `your-theme/condoleance-register/single-condoleance.php`
+- `your-theme/condoleance-register/archive-condoleance.php`
+
 ## Migration from Tahlil
 
 The plugin automatically detects old Tahlil data and offers migration:
@@ -43,13 +91,18 @@ The plugin automatically detects old Tahlil data and offers migration:
 
 ### 2.0.0 (2025-11-12)
 - Complete rewrite with modern WordPress standards
-- PHP 8.0+ with strict typing
+- PHP 8.0+ with strict typing and namespacing
 - Enhanced security (nonces, sanitization, escaping)
-- REST API integration
-- Data migration from Tahlil
-- Improved admin interface
+- REST API and AJAX integration for virtual candles
+- Data migration from Tahlil plugin
+- Custom single and archive templates with beautiful design
+- Two powerful shortcodes with full customization
+- Responsive, mobile-first CSS with grid layouts
+- Pagination support for archives and shortcodes
+- Photo gallery with lightbox support
+- Improved admin interface with CMB2 meta boxes
 - GDPR compliance features
-- Better code organization and documentation
+- Better code organization and comprehensive documentation
 
 ## Credits
 
