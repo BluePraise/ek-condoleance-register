@@ -100,7 +100,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
 }
 
 .placeholder-icon {
@@ -254,27 +253,26 @@
     margin-bottom: 3rem;
 }
 
-.gallery-title {
+.condoleance-gallery .gallery-title {
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     text-align: center;
     color: #333;
 }
 
-.gallery-grid {
+.condoleance-gallery .gallery-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem;
 }
 
-.gallery-item {
+.condoleance-gallery .gallery-item {
     position: relative;
     overflow: hidden;
-    border-radius: 8px;
     padding-top: 100%; /* 1:1 aspect ratio */
 }
 
-.gallery-item a {
+.condoleance-gallery .gallery-item a {
     position: absolute;
     top: 0;
     left: 0;
@@ -283,21 +281,15 @@
     display: block;
 }
 
-.gallery-image {
+.condoleance-gallery .gallery-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+
     transition: transform 0.3s ease;
 }
 
 .gallery-item:hover .gallery-image {
     transform: scale(1.1);
-}
-
-/* Overwrite style single-photo gallery aspect ratio in style.css */
-.single-photo .gallery-item img {
-    padding-top: 66.67%; /* 3:2 aspect ratio */
-    aspect-ratio: 3 / 2;
 }
 
 /* =============================================================================
@@ -572,7 +564,7 @@
         gap: 1.5rem;
     }
 
-    .gallery-grid {
+    .condoleance-gallery .gallery-grid {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
 
@@ -596,7 +588,7 @@
         padding: 1rem;
     }
 
-    .gallery-grid {
+    .condoleance-gallery .gallery-grid {
         grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         gap: 0.5rem;
     }
