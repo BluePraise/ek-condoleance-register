@@ -112,11 +112,11 @@ class Candles
             return rest_ensure_response([
                 'success' => true,
                 'count' => $this->get_candle_count($post_id),
-                'message' => __('Candle lit successfully.', 'condoleance-register'),
+                'message' => __('Het kaarsje is aangestoken.', 'condoleance-register'),
             ]);
         }
 
-        return new \WP_Error('candle_error', __('Failed to light candle.', 'condoleance-register'), ['status' => 500]);
+        return new \WP_Error('candle_error', __('Het is niet gelukt om het kaarsje aan te steken.', 'condoleance-register'), ['status' => 500]);
     }
 
     /**
