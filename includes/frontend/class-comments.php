@@ -47,10 +47,10 @@ class Comments
             return $defaults;
         }
 
-        $defaults['title_reply'] = __('Leave a Condoleance', 'condoleance-register');
+        $defaults['title_reply'] = __('Berichten', 'condoleance-register');
         $defaults['comment_field'] = sprintf(
             '<p class="comment-form-comment"><label for="comment">%s</label><textarea id="comment" name="comment" cols="45" rows="8" required="required"></textarea></p>',
-            esc_html__('Your Message', 'condoleance-register')
+            esc_html__('Uw bericht', 'condoleance-register')
         );
 
         return $defaults;
