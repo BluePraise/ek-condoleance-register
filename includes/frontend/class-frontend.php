@@ -72,7 +72,10 @@ class Frontend
 
         ob_start();
 ?>
-        <div class="condoleance-register-list">
+        <!-- Search Functionality -->
+        <input type="search" class="js-search-field" placeholder="Zoek op naam" />
+
+        <div class="condoleance-register-list js-search-list">
             <?php if ($query->have_posts()) : ?>
                 <div class="condoleance-grid">
                     <?php
@@ -124,7 +127,7 @@ class Frontend
     ?>
         <article id="post-<?php the_ID(); ?>" <?php post_class('condoleance-card'); ?>>
             <h3 class="obituary-name">
-                <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                <a href="<?php the_permalink(); ?>" class="js-search-item"><?php the_title(); ?></a>
             </h3>
             <!-- Obituary Dates -->
             <?php if ($birth_date || $death_date) : ?>
