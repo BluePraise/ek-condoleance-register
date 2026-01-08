@@ -128,7 +128,11 @@ final class Plugin
             || (is_a($post, 'WP_Post') && (
                 has_shortcode($post->post_content, 'condoleance_register')
                 || has_shortcode($post->post_content, 'light_a_candle')
+                || has_shortcode($post->post_content, 'condoleance_meta')
             ));
+
+        // Allow themes/plugins to force load assets (e.g., for widgets)
+        $should_load = apply_filters('condoleance_register_load_assets', $should_load);
 
         if (!$should_load) {
             return;

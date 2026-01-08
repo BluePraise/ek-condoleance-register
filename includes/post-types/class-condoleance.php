@@ -163,6 +163,18 @@ class Condoleance
         ]);
 
         $cmb->add_field([
+            'name' => esc_html__('Hero Background Image', 'condoleance-register'),
+            'id' => $prefix . 'hero_image',
+            'type' => 'file',
+            'options' => [
+                'url' => false,
+            ],
+            'query_args' => ['type' => 'image'],
+            'preview_size' => 'medium',
+            'description' => esc_html__('Upload a background image for the hero banner. If not set, the featured image will be used.', 'condoleance-register'),
+        ]);
+
+        $cmb->add_field([
             'name' => esc_html__('Photo Gallery', 'condoleance-register'),
             'id' => $prefix . 'photos',
             'type' => 'file_list',
@@ -185,6 +197,43 @@ class Condoleance
             'description' => esc_html__('Number of virtual candles lit by visitors. Managed automatically.', 'condoleance-register'),
             'save_field' => false,
             'default_cb' => [$this, 'get_candle_count_display'],
+        ]);
+
+        // Service Information.
+        $cmb_service = new_cmb2_box([
+            'id' => $prefix . 'service_info',
+            'title' => esc_html__('Service Information', 'condoleance-register'),
+            'object_types' => [self::POST_TYPE],
+            'context' => 'normal',
+            'priority' => 'high',
+            'show_names' => true,
+        ]);
+
+        $cmb_service->add_field([
+            'name' => esc_html__('Service Date', 'condoleance-register'),
+            'id' => $prefix . 'service_date',
+            'type' => 'text_date',
+            'date_format' => 'd/m/Y',
+        ]);
+
+        $cmb_service->add_field([
+            'name' => esc_html__('Service Time', 'condoleance-register'),
+            'id' => $prefix . 'service_time',
+            'type' => 'text_time',
+            'time_format' => 'H:i',
+        ]);
+
+        $cmb_service->add_field([
+            'name' => esc_html__('Service Location', 'condoleance-register'),
+            'id' => $prefix . 'service_location',
+            'type' => 'textarea_small',
+            'description' => esc_html__('Enter the address or location details.', 'condoleance-register'),
+        ]);
+
+        $cmb_service->add_field([
+            'name' => esc_html__('Funeral Home', 'condoleance-register'),
+            'id' => $prefix . 'funeral_home',
+            'type' => 'text',
         ]);
     }
 

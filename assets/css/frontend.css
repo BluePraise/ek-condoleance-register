@@ -1,7 +1,202 @@
 /* Condoleance Register - Frontend Styles */
 :root {
     --primary-color: #B4211D;
-    --secondary-color: #212331;
+    --secondary-color: #181828;
+    --theme-gray-1: #F5F5F5;
+}
+
+/* =============================================================================
+   Hero Banner
+   ========================================================================== */
+
+.condoleance-hero.hero-banner {
+    background: #131b4f; /** TODO: CHECK WHY THIS COLOR IS NOT OVERRIDDEN **/
+    position: relative;
+    padding: 3rem 0;
+    color: #fff;
+    text-align: center;
+}
+
+.condoleance-hero .container {
+    position: relative;
+}
+
+.condoleance-hero .banner-heading {
+    margin: 0;
+    padding: 1rem;
+    font-size: 2.5rem;
+    font-weight: 600;
+}
+
+/* =============================================================================
+   Gallery
+   ========================================================================== */
+
+.condoleance-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.condoleance-gallery__item {
+    flex: 0 1 calc(33.333% - 1rem);
+    min-width: 200px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.condoleance-gallery__item:hover {
+    transform: scale(1.05);
+}
+
+.condoleance-gallery__item a {
+    display: block;
+    position: relative;
+}
+
+.condoleance-gallery__image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.condoleance-gallery__caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.condoleance-gallery__item:hover .condoleance-gallery__caption {
+    opacity: 1;
+}
+
+/* =============================================================================
+   Meta Information Display
+   ========================================================================== */
+
+.condoleance-meta-info {
+    background: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.condoleance-meta-info .meta-item {
+    margin-bottom: 1.5rem;
+}
+
+.condoleance-meta-info .meta-item:last-child {
+    margin-bottom: 0;
+}
+
+.condoleance-meta-info .meta-heading {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    color: var(--secondary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+
+.condoleance-meta-info .meta-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.condoleance-meta-info .meta-row:last-child {
+    border-bottom: none;
+}
+
+.condoleance-meta-info .meta-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.condoleance-meta-info .meta-value {
+    color: #333;
+}
+
+.meta-location .meta-value {
+    flex: 1;
+    text-align: left;
+}
+
+/* =============================================================================
+   Info Section (Meta & Candle)
+   ========================================================================== */
+
+.condoleance-info {
+    text-align: center;
+    margin: 3rem 0;
+}
+
+.condoleance-info__meta {
+    margin-bottom: 2rem;
+}
+
+.condoleance-info__heading {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--secondary-color);
+}
+
+.condoleance-info__candle {
+    margin: 2rem 0;
+}
+
+.condoleance-info__candle-gif {
+    max-width: 100px;
+    height: auto;
+}
+
+.condoleance-info__candle-icon {
+    font-size: 3rem;
+    animation: flicker 2s infinite;
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+    75% { opacity: 0.9; }
+}
+
+.condoleance-info__widget {
+    margin-top: 2rem;
+}
+
+/* =============================================================================
+   Responsive adjustments
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .condoleance-hero .banner-heading {
+        font-size: 1.75rem;
+    }
+
+    .condoleance-gallery__item {
+        flex: 0 1 calc(50% - 1rem);
+    }
+
+    .condoleance-meta-info .meta-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
 }
 /* =============================================================================
    Archive & Grid Layout
@@ -21,9 +216,9 @@
 }
 
 .archive-title {
-    font-size: 2.5rem;
+    /* font-size: 2.5rem; */
     margin-bottom: 0.5rem;
-    color: #333;
+    color: var(--theme-color-1);
 }
 
 .archive-description {
@@ -37,20 +232,10 @@
 
 .condoleance-grid {
     display: grid;
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-.condoleance-grid-2 {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-}
-
-.condoleance-grid-3 {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-}
-
-.condoleance-grid-4 {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    /* 2 column layout, 2 on ipad and 1 on mobile */
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+    gap: 2.5rem;
+    margin: 3rem;
 }
 
 /* =============================================================================
@@ -58,13 +243,14 @@
    ========================================================================== */
 
 .condoleance-card {
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: var(--theme-gray-1);
+    border-radius: 2px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
 }
 
 .condoleance-card:hover {
@@ -76,30 +262,24 @@
 .card-image-placeholder {
     display: block;
     position: relative;
-    width: 100%;
-    padding-top: 66.67%; /* 3:2 aspect ratio */
+    min-width: 280px;
     overflow: hidden;
     background: #f5f5f5;
 }
 
 .card-image {
-    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.condoleance-card:hover .card-image {
-    transform: scale(1.05);
 }
 
 .card-image-placeholder {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    padding-top: 0;
 }
 
 .placeholder-icon {
@@ -108,33 +288,32 @@
 }
 
 .card-content {
-    padding: 1.5rem;
+    padding: 2rem;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.card-title {
-    font-size: 1.5rem;
+.obituary-name {
+    text-align: center;
     margin: 0 0 0.75rem;
     line-height: 1.3;
 }
 
-.card-title a {
+.obituary-name a {
     color: #333;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
-.card-title a:hover {
+.obituary-name a:hover {
     color: #B4211D;
 }
 
 .card-dates {
+    text-align: center;
     color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-    font-style: italic;
+    margin-bottom: 4rem;
 }
 
 .card-excerpt {
@@ -145,9 +324,7 @@
 }
 
 .card-meta {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 1rem;
+    margin: 1.5rem 0;
     padding-top: 1rem;
     border-top: 1px solid #e0e0e0;
     font-size: 0.9rem;
@@ -161,9 +338,12 @@
     gap: 0.5rem;
 }
 
-.candle-icon,
-.comment-icon {
+.card-meta .candle-icon {
     font-size: 1.2rem;
+}
+
+.card-meta .comment-icon {
+    font-size: 1.3rem;
 }
 
 .card-link {
@@ -177,6 +357,9 @@
     transition: background 0.3s ease;
     border: none;
     cursor: pointer;
+    margin-top: auto;
+    width: 200px;
+    align-self: flex-end;
 }
 
 .card-link:hover {
@@ -296,13 +479,6 @@
    Candle Widget
    ========================================================================== */
 
-.condoleance-candles-section {
-    margin: 3rem 0;
-    padding: 2rem;
-    border-radius: 12px;
-    color: #fff;
-}
-
 .condoleance-candle-widget {
     padding: 2rem;
     text-align: center;
@@ -316,7 +492,8 @@
     text-align: center;
 }
 
-.candle-icon {
+.condoleance-candle-widget .candle-icon,
+.candle-icon-large {
     font-size: 3rem;
     margin-bottom: 1rem;
     filter: drop-shadow(0 0 10px rgba(255, 200, 0, 0.5));
@@ -325,7 +502,6 @@
 .candle-icon-large {
     font-size: 4rem;
     margin-bottom: 1.5rem;
-    filter: drop-shadow(0 0 15px rgba(255, 200, 0, 0.6));
 }
 
 .candle-count-display {
@@ -559,13 +735,19 @@
         gap: 0.5rem;
     }
 
-    .condoleance-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
+    .condoleance-card {
+        flex-direction: column;
     }
 
-    .condoleance-gallery .gallery-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    .card-image-link,
+    .card-image-placeholder {
+        width: 100%;
+        min-width: 100%;
+        height: 200px;
+    }
+
+    .condoleance-grid {
+        gap: 1.5rem;
     }
 
     .card-meta {
@@ -586,11 +768,6 @@
     .condoleance-archive,
     .condoleance-single {
         padding: 1rem;
-    }
-
-    .condoleance-gallery .gallery-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 0.5rem;
     }
 
     .condoleance-light-candle {
