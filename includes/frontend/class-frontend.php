@@ -148,6 +148,12 @@ class Frontend
             <?php endif; ?>
             <!-- End of Obituary Dates -->
 
+            <?php if (has_excerpt()) : ?>
+                <div class="card-excerpt">
+                    <?php the_excerpt(); ?>
+                </div>
+            <?php endif; ?>
+
             <?php if (has_post_thumbnail()) : ?>
                 <a href="<?php the_permalink(); ?>" class="card-image-link">
                     <?php the_post_thumbnail('medium', ['class' => 'card-image']); ?>
@@ -158,49 +164,52 @@ class Frontend
                 </div>
             <?php endif; ?>
 
+            <div class="card-meta">
 
+                <span class="candle-count">
+                    <span class="candle-icon">🕯️</span>
+                    <?php if ($candle_count < 1) : ?>
+                        <?php
+                        printf(
+                            esc_html__('Er zijn nog geen kaarsjes aangestoken', 'condoleance-register')
+                        );
+                        ?>
 
-                <?php if (has_excerpt()) : ?>
-                    <div class="card-excerpt">
-                        <?php the_excerpt(); ?>
-                    </div>
-                <?php endif; ?>
-
-                <div class="card-meta">
-                    <!-- /* if no candles, this section will be empty */ -->
-                    <?php if ($candle_count > 0) : ?>
-                        <span class="candle-count">
-                            <span class="candle-icon">🕯️</span>
-                            <?php
-                            printf(
-                                /* translators: %d: number of candles */
-                                esc_html(_n('er is %d kaarsje aangestoken', 'er zijn %d kaarsjes aangestoken', $candle_count, 'condoleance-register')),
-                                $candle_count
-                            );
-                            ?>
-                        </span>
+                    <?php else : ?>
+                        <?php
+                        printf(
+                            /* translators: %d: number of candles */
+                            esc_html(_n('Er is %d kaarsje aangestoken', 'Er zijn %d kaarsjes aangestoken', $candle_count, 'condoleance-register')),
+                            $candle_count
+                        );
+                        ?>
                     <?php endif; ?>
+                </span>
 
-                    <?php
-                    $comment_count = get_comments_number();
-                    if ($comment_count > 0) :
-                    ?>
-                        <span class="comment-count">
-                            <span class="comment-icon">💬</span>
-                            <?php
-                            printf(
-                                /* translators: %d: number of comments */
-                                esc_html(_n('er is %d bericht', 'er zijn %d berichten', $comment_count, 'condoleance-register')),
-                                $comment_count
-                            );
-                            ?>
-                        </span>
-                    <?php endif; ?>
-                </div>
-
+                <?php
+                $comment_count = get_comments_number();
+                ?>
+                <span class="comment-count">
+                    <span class="comment-icon">💬</span>
+                    <?php if ($comment_count < 1) :
+                        printf(
+                            /* translators: %d: number of comments */
+                            esc_html__('Er zijn nog geen berichten geplaatst', 'condoleance-register'),
+                        );
+                    else:
+                        printf(
+                            /* translators: %d: number of comments */
+                            esc_html(_n('Er is %d bericht geplaatst', 'er zijn %d berichten geplaatst', $comment_count, 'condoleance-register')),
+                            $comment_count
+                        );
+                    endif; ?>
+                </span>
                 <a href="<?php the_permalink(); ?>" class="card-link button">
                     <?php esc_html_e('Condoleer', 'condoleance-register'); ?>
                 </a>
+            </div>
+
+
 
         </article>
     <?php
