@@ -230,6 +230,70 @@
     margin: 2rem 0;
 }
 
+/* =============================================================================
+   Search
+   ========================================================================== */
+
+.condoleance-search {
+    margin-bottom: 1rem;
+}
+
+.condoleance-search-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.condoleance-search .js-search-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.condoleance-search .js-search-field:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.search-results-counter {
+    margin: 1rem 0;
+    color: #495057;
+    font-weight: 500;
+}
+
+.search-loading {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    /* background: #e3f2fd; */
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.search-loading .spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    /* border: 2px solid #2196f3; */
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* =============================================================================
+   Condoleance Grid
+   ========================================================================== */
+
 .condoleance-grid {
     display: grid;
     /* 2 column layout, 2 on ipad and 1 on mobile */

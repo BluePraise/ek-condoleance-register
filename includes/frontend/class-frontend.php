@@ -74,7 +74,10 @@ class Frontend
 ?>
         <!-- Search Functionality -->
         <div class="condoleance-search">
-            <input type="search" class="js-search-field" placeholder="Zoek op naam" />
+            <div class="condoleance-search-container">
+                <input type="search" class="js-search-field" placeholder="Zoek op naam" aria-label="Zoek in condoleances" />
+                <div class="search-results-counter hide" aria-live="polite" aria-atomic="true"></div>
+            </div>
         </div>
 
         <div class="condoleance-register-list js-search-list">

@@ -87,7 +87,7 @@ final class Plugin
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
         add_filter('single_template', [$this, 'load_single_template']);
-        
+
         // Only load archive template if enabled in settings
         if (get_option('condoleance_enable_archive', true)) {
             add_filter('archive_template', [$this, 'load_archive_template']);
@@ -168,6 +168,7 @@ final class Plugin
         wp_localize_script('condoleance-register-frontend', 'condoleanceRegister', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'restUrl' => rest_url('condoleance-register/v1'),
+            'wpRestUrl' => rest_url('wp/v2'),
             'nonce' => wp_create_nonce('condoleance_register_nonce'),
             'strings' => [
                 'error' => esc_html__('An error occurred. Please try again.', 'condoleance-register'),
