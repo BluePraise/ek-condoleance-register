@@ -73,7 +73,9 @@ class Frontend
         ob_start();
 ?>
         <!-- Search Functionality -->
-        <input type="search" class="js-search-field" placeholder="Zoek op naam" />
+        <div class="condoleance-search">
+            <input type="search" class="js-search-field" placeholder="Zoek op naam" />
+        </div>
 
         <div class="condoleance-register-list js-search-list">
             <?php if ($query->have_posts()) : ?>

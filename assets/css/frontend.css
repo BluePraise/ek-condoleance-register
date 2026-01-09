@@ -346,6 +346,30 @@
     color: #fff;
 }
 
+.condoleance-search {
+    background-color: #212331;
+    padding: 4rem;
+    margin: 0 auto;
+}
+
+.condoleance-search .js-search-field {
+    all: unset; /* remove all default styles from search input */
+    display: block;
+    margin: auto;
+    width: 100%;
+    max-width: 600px;
+    padding: 0.5rem 1rem;
+    font-size: 18px;
+    font-family: sans-serif;
+    color: #fff;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* search icon */
+.condoleance-search .js-search-field::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
 /* =============================================================================
    Single Condoleance
    ========================================================================== */
