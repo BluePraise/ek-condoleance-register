@@ -50,7 +50,14 @@ get_header();
 
     <?php if (have_posts()) : ?>
 
-        <div class="condoleance-grid">
+        <?php if (get_option('condoleance_show_search_on_archive', true)) : ?>
+            <div class="condoleance-search">
+                <input type="search" class="js-search-field" placeholder="<?php esc_attr_e('Zoek op naam', 'condoleance-register'); ?>" aria-label="<?php esc_attr_e('Zoek in condoleances', 'condoleance-register'); ?>">
+            </div>
+        <?php endif; ?>
+
+        <div class="condoleance-register-list js-search-list">
+            <div class="condoleance-grid">
             <?php
             while (have_posts()) :
                 the_post();
@@ -63,6 +70,38 @@ get_header();
 
                 <article id="post-<?php the_ID(); ?>" <?php post_class('condoleance-card'); ?>>
 
+                    <h3 class="obituary-name">
+                        <a href="<?php the_permalink(); ?>" class="js-search-item"><?php the_title(); ?></a>
+                    </h3>
+
+                    <!-- Obituary Dates -->
+                    <?php if ($birth_date || $death_date) : ?>
+                        <div class="card-dates">
+                            <?php if ($birth_date && $death_date) : ?>
+                                <span class="date-range">
+                                    <?php echo esc_html($birth_date); ?> - <?php echo esc_html($death_date); ?>
+                                </span>
+                            <?php elseif ($death_date) : ?>
+                                <span class="death-date">
+                                    <?php
+                                    printf(
+                                        /* translators: %s: date of death */
+                                        esc_html__('Overleden: %s', 'condoleance-register'),
+                                        esc_html($death_date)
+                                    );
+                                    ?>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                    <!-- End of Obituary Dates -->
+
+                    <?php if (has_excerpt()) : ?>
+                        <div class="card-excerpt">
+                            <?php the_excerpt(); ?>
+                        </div>
+                    <?php endif; ?>
+
                     <?php if (has_post_thumbnail()) : ?>
                         <a href="<?php the_permalink(); ?>" class="card-image-link">
                             <?php the_post_thumbnail('medium', ['class' => 'card-image']); ?>
@@ -73,74 +112,52 @@ get_header();
                         </div>
                     <?php endif; ?>
 
-                    <div class="card-content">
-                        <h2 class="card-title">
-                            <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-                        </h2>
-
-                        <?php if ($birth_date || $death_date) : ?>
-                            <div class="card-dates">
-                                <?php if ($birth_date && $death_date) : ?>
-                                    <span class="date-range">
-                                        <?php echo esc_html($birth_date); ?> - <?php echo esc_html($death_date); ?>
-                                    </span>
-                                <?php elseif ($death_date) : ?>
-                                    <span class="death-date">
-                                        <?php
-                                        printf(
-                                            /* translators: %s: death date */
-                                            esc_html__('Passed: %s', 'condoleance-register'),
-                                            esc_html($death_date)
-                                        );
-                                        ?>
-                                    </span>
-                                <?php endif; ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php if (has_excerpt()) : ?>
-                            <div class="card-excerpt">
-                                <?php the_excerpt(); ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <div class="card-meta">
-                            <span class="candle-count">
-                                <span class="candle-icon">🕯️</span>
+                    <div class="card-meta">
+                        <span class="candle-count">
+                            <span class="candle-icon">🕯️</span>
+                            <?php if ($candle_count < 1) : ?>
+                                <?php
+                                printf(
+                                    esc_html__('Er zijn nog geen kaarsjes aangestoken', 'condoleance-register')
+                                );
+                                ?>
+                            <?php else : ?>
                                 <?php
                                 printf(
                                     /* translators: %d: number of candles */
-                                    esc_html(_n('%d candle', '%d candles', $candle_count, 'condoleance-register')),
+                                    esc_html(_n('Er is %d kaarsje aangestoken', 'Er zijn %d kaarsjes aangestoken', $candle_count, 'condoleance-register')),
                                     $candle_count
                                 );
                                 ?>
-                            </span>
-
-                            <?php
-                            $comment_count = get_comments_number();
-                            if ($comment_count > 0) :
-                                ?>
-                                <span class="comment-count">
-                                    <span class="comment-icon">💬</span>
-                                    <?php
-                                    printf(
-                                        /* translators: %d: number of comments */
-                                        esc_html(_n('%d message', '%d messages', $comment_count, 'condoleance-register')),
-                                        $comment_count
-                                    );
-                                    ?>
-                                </span>
                             <?php endif; ?>
-                        </div>
+                        </span>
 
+                        <?php
+                        $comment_count = get_comments_number();
+                        ?>
+                        <span class="comment-count">
+                            <span class="comment-icon">💬</span>
+                            <?php if ($comment_count < 1) :
+                                printf(
+                                    esc_html__('Er zijn nog geen berichten geplaatst', 'condoleance-register')
+                                );
+                            else:
+                                printf(
+                                    /* translators: %d: number of comments */
+                                    esc_html(_n('Er is %d bericht geplaatst', 'er zijn %d berichten geplaatst', $comment_count, 'condoleance-register')),
+                                    $comment_count
+                                );
+                            endif; ?>
+                        </span>
                         <a href="<?php the_permalink(); ?>" class="card-link button">
-                            <?php esc_html_e('View Memorial', 'condoleance-register'); ?>
+                            <?php esc_html_e('Condoleer', 'condoleance-register'); ?>
                         </a>
                     </div>
 
                 </article>
 
             <?php endwhile; ?>
+            </div>
         </div>
 
         <?php

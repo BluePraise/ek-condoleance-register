@@ -87,7 +87,12 @@ final class Plugin
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
         add_filter('single_template', [$this, 'load_single_template']);
-        add_filter('archive_template', [$this, 'load_archive_template']);
+        
+        // Only load archive template if enabled in settings
+        if (get_option('condoleance_enable_archive', true)) {
+            add_filter('archive_template', [$this, 'load_archive_template']);
+            add_action('pre_get_posts', [$this, 'modify_archive_query']);
+        }
     }
 
     /**
@@ -238,6 +243,21 @@ final class Plugin
         }
 
         return $template;
+    }
+
+    /**
+     * Modify archive query to respect settings.
+     *
+     * @since 2.0.0
+     * @param \WP_Query $query The WP_Query instance.
+     * @return void
+     */
+    public function modify_archive_query(\WP_Query $query): void
+    {
+        if (!is_admin() && $query->is_main_query() && is_post_type_archive('condoleance')) {
+            $per_page = get_option('condoleance_archive_per_page', 10);
+            $query->set('posts_per_page', absint($per_page));
+        }
     }
 
     /**
