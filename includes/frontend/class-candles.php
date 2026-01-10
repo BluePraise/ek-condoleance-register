@@ -29,8 +29,6 @@ class Candles
      */
     public function __construct()
     {
-        add_action('wp_ajax_light_candle', [$this, 'ajax_light_candle']);
-        add_action('wp_ajax_nopriv_light_candle', [$this, 'ajax_light_candle']);
         add_action('rest_api_init', [$this, 'register_rest_routes']);
     }
 
@@ -62,35 +60,6 @@ class Candles
     }
 
     /**
-     * AJAX handler for lighting a candle.
-     *
-     * @since 2.0.0
-     * @return void
-     */
-    public function ajax_light_candle(): void
-    {
-        check_ajax_referer('condoleance_register_nonce', 'nonce');
-
-        $post_id = isset($_POST['post_id']) ? absint($_POST['post_id']) : 0;
-        $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
-
-        if (!$post_id || 'condoleance' !== get_post_type($post_id)) {
-            wp_send_json_error(['message' => __('Invalid condoleance.', 'condoleance-register')]);
-        }
-
-        $result = $this->light_candle($post_id, $name);
-
-        if ($result) {
-            wp_send_json_success([
-                'message' => __('Candle lit successfully.', 'condoleance-register'),
-                'count' => $this->get_candle_count($post_id),
-            ]);
-        } else {
-            wp_send_json_error(['message' => __('Failed to light candle.', 'condoleance-register')]);
-        }
-    }
-
-    /**
      * REST API handler for lighting a candle.
      *
      * @since 2.0.0
@@ -100,13 +69,15 @@ class Candles
     public function light_candle_rest(\WP_REST_Request $request)
     {
         $post_id = (int) $request['id'];
-        $name = $request['name'] ?? '';
+        $json_params = $request->get_json_params();
+        $name = isset($json_params['name']) ? sanitize_text_field($json_params['name']) : '';
+        $anonymous = isset($json_params['anonymous']) ? (bool) $json_params['anonymous'] : false;
 
         if ('condoleance' !== get_post_type($post_id)) {
             return new \WP_Error('invalid_post', __('Invalid condoleance.', 'condoleance-register'), ['status' => 404]);
         }
 
-        $result = $this->light_candle($post_id, $name);
+        $result = $this->light_candle($post_id, $name, $anonymous);
 
         if ($result) {
             return rest_ensure_response([
@@ -125,9 +96,10 @@ class Candles
      * @since 2.0.0
      * @param int    $post_id Post ID.
      * @param string $name    Name of person lighting candle (optional).
+     * @param bool   $anonymous Whether the user wants to remain anonymous.
      * @return bool Whether candle was lit successfully.
      */
-    private function light_candle(int $post_id, string $name = ''): bool
+    private function light_candle(int $post_id, string $name = '', bool $anonymous = false): bool
     {
         $candles = get_post_meta($post_id, 'condoleance_candles_data', true);
 
@@ -140,6 +112,7 @@ class Candles
         if ($name) {
             $candles['users'][] = [
                 'name' => sanitize_text_field($name),
+                'anonymous' => $anonymous,
                 'date' => current_time('mysql'),
                 'ip' => $this->get_client_ip(),
             ];

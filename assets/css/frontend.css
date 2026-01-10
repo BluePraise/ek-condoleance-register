@@ -463,6 +463,18 @@
     color: #333;
 }
 
+.condoleance-info__candle-gif {
+    max-width: 100px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+/* undo bootstrap */
+.form-check .form-check-input {
+    float: unset !important;
+    margin-left: 0 !important;
+}
+
 /* =============================================================================
    Photo Gallery
    ========================================================================== */
@@ -541,22 +553,13 @@
 
 .candle-count-display {
     margin: 1.5rem 0;
-}
-
-.condoleance-candle-count {
-    display: block;
-    font-size: 3rem;
-    font-weight: bold;
-    color: var(--primary-color);;
-    margin-bottom: 0.5rem;
-}
-
-.candle-label {
-    display: block;
     font-size: 1.2rem;
     color: #666;
     text-transform: uppercase;
     letter-spacing: 1px;
+}
+.condoleance-candle-count {
+    margin-right: 0.3rem;
 }
 
 .condoleance-light-candle {

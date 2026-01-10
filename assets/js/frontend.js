@@ -14,55 +14,83 @@
         },
 
         bindEvents() {
-            $(document).on('click', '.condoleance-light-candle', this.lightCandle.bind(this));
+            $(document).on('submit', '.condoleance-light-candle-form', this.handleFormSubmit.bind(this));
         },
 
-        lightCandle(e) {
+        handleFormSubmit(e) {
             e.preventDefault();
 
-            const $button = $(e.currentTarget);
-            const postId = $button.data('post-id');
-            const name = $button.data('name') || '';
+            const $form = $(e.currentTarget);
+            const $button = $form.find('button[type="submit"]');
+            const postId = $form.find('input[name="post_id"]').val();
 
             if ($button.hasClass('loading')) {
                 return;
             }
 
+            // Disable submit button
             $button.addClass('loading').prop('disabled', true);
 
-            $.ajax({
-                url: condoleanceRegister.ajaxUrl,
-                type: 'POST',
-                data: {
-                    action: 'light_candle',
-                    nonce: condoleanceRegister.nonce,
-                    post_id: postId,
-                    name: name
+            const name = $form.find('input[name="name"]').val();
+            const isAnonymous = $form.find('input[name="anonymous"]').is(':checked');
+
+            const payload = {
+                name: name,
+                anonymous: isAnonymous
+            };
+
+            fetch(`${condoleanceRegister.restUrl}/candles/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
                 },
-                success: (response) => {
-                    if (response.success) {
-                        this.updateCandleCount(postId, response.data.count);
-                        this.showNotification(response.data.message, 'success');
-                    } else {
-                        this.showNotification(response.data.message, 'error');
+                credentials: 'same-origin',
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.updateCandleCount(postId, data.count);
+                    this.showNotification(data.message, 'success');
+
+                    // Close modal and reset form
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('candleModal'));
+                    if (modal) {
+                        modal.hide();
                     }
-                },
-                error: () => {
-                    this.showNotification(condoleanceRegister.strings.error, 'error');
-                },
-                complete: () => {
-                    $button.removeClass('loading').prop('disabled', false);
+                    $form[0].reset();
+                } else {
+                    console.error('Error response:', data);
+                    this.showNotification(data.message || condoleanceRegister.strings.error, 'error');
                 }
+            })
+            .catch(error => {
+                console.error('Error lighting candle:', error);
+                this.showNotification(condoleanceRegister.strings.error, 'error');
+            })
+            .finally(() => {
+                $button.removeClass('loading').prop('disabled', false);
             });
         },
-
         updateCandleCount(postId, count) {
             $(`.condoleance-candle-count[data-post-id="${postId}"]`).text(count);
         },
 
         showNotification(message, type) {
-            // Simple notification - can be enhanced with a proper notification library
-            alert(message);
+            const $notification = $('.condoleance-notification');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+
+            $notification
+                .removeClass('d-none alert-success alert-danger')
+                .addClass(alertClass)
+                .text(message)
+                .slideDown();
+
+            setTimeout(() => {
+                $notification.slideUp(400, function() {
+                    $(this).addClass('d-none').removeClass(alertClass).text('');
+                });
+            }, 4000);
         }
     };
 

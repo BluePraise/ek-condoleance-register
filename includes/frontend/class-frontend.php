@@ -238,11 +238,13 @@ class Frontend
             'post_id' => $post ? $post->ID : 0,
             'show_count' => 'yes',
             'show_names' => 'no',
+            'use_gif' => 'no',
         ], $atts, 'light_a_candle');
 
         $post_id = absint($atts['post_id']);
         $show_count = 'yes' === $atts['show_count'];
         $show_names = 'yes' === $atts['show_names'];
+        $use_gif = 'yes' === $atts['use_gif'];
 
         if (!$post_id || 'condoleance' !== get_post_type($post_id)) {
             return '<p class="error">' . esc_html__('Invalid memorial.', 'condoleance-register') . '</p>';
@@ -256,7 +258,12 @@ class Frontend
     ?>
         <div class="condoleance-candle-widget">
             <div class="candle-widget-inner">
-                <div class="candle-icon-large">🕯️</div>
+                <?php if ($use_gif) : ?>
+                    <?php $candle_gif = apply_filters('condoleance_candle_gif', site_url('/wp-content/uploads/2020/02/kaarsje.gif')); ?>
+                    <img src="<?php echo esc_url($candle_gif); ?>" alt="<?php esc_attr_e('Gif van een kaarsje', 'condoleance-register'); ?>" class="condoleance-info__candle-gif" style="max-width: 100px; height: auto; margin-bottom: 1rem;">
+                <?php else : ?>
+                    <div class="candle-icon-large">🕯️</div>
+                <?php endif; ?>
 
                 <?php if ($show_count) : ?>
                     <div class="candle-count-display">
