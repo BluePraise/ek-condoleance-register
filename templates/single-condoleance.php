@@ -79,6 +79,17 @@ while (have_posts()) :
                                     <?php echo esc_html(_n('kaarsje aangestoken', 'kaarsjes aangestoken', $candle_count, 'condoleance-register')); ?>
                                 </span>
                             </div>
+                            <?php
+                            // Display link to view people who lit candles
+                            $candle_users = is_array($candles_data) && isset($candles_data['users']) ? $candles_data['users'] : [];
+                            if (!empty($candle_users)) :
+                            ?>
+                                <div class="mt-2 mb-4">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#candleUsersModal" class="text-decoration-none">
+                                        <?php esc_html_e('Deze mensen hebben een kaarsje aangestoken', 'condoleance-register'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
                             <button
                                 class="condoleance-light-candle button"
                                 data-post-id="<?php echo esc_attr(get_the_ID()); ?>"
@@ -88,7 +99,9 @@ while (have_posts()) :
                                 <?php esc_html_e('Steek een kaarsje aan', 'condoleance-register'); ?>
                             </button>
                             <div class="condoleance-notification alert d-none mt-5" role="alert"></div>
-                            <!-- Bootstrap Modal -->
+
+
+                            <!-- Light a Candle Modal -->
                             <div class="modal fade" id="candleModal" tabindex="-1" aria-labelledby="candleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
@@ -114,19 +127,47 @@ while (have_posts()) :
                                     </div>
                                 </div>
                             </div>
+                            <!-- Candle Users List Modal -->
+                            <?php if (!empty($candle_users)) : ?>
+                                <div class="modal fade" id="candleUsersModal" tabindex="-1" aria-labelledby="candleUsersModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="candleUsersModalLabel"><?php esc_html_e('Deze mensen hebben een kaarsje aangestoken', 'condoleance-register'); ?></h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <ul class="list-unstyled">
+                                                    <?php
+                                                    $all_users = array_reverse($candle_users); // Show newest first
+                                                    foreach ($all_users as $user) :
+                                                    ?>
+                                                        <li class="candle-user-item mb-3 pb-3 border-bottom">
+                                                            <small class="text-muted d-block mb-1">
+                                                                <?php echo esc_html(date_i18n('d-m-Y H:i', strtotime($user['date']))); ?>
+                                                            </small>
+                                                            <span class="candle-user-name fw-bold">
+                                                                <?php
+                                                                echo isset($user['anonymous']) && $user['anonymous']
+                                                                    ? esc_html__('Anoniem', 'condoleance-register')
+                                                                    : esc_html($user['name']);
+                                                                ?>
+                                                            </span>
+                                                        </li>
+                                                    <?php endforeach; ?>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <?php do_action('condoleance_before_comments', get_the_ID()); ?>
 
                     <?php
-                    // Support for legacy Tahlil plugin hooks
-                    if (has_action('reactie_comment_content') || has_action('tahlil_reactie_form')) {
-                        do_action('reactie_comment_content');
-                        do_action('tahlil_reactie_form');
-                    }
-
-                    // Standard WordPress comments
+                    // Display comments
                     if (comments_open() || get_comments_number()) {
                         comments_template();
                     }

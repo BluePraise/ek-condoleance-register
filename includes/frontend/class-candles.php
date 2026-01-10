@@ -80,9 +80,13 @@ class Candles
         $result = $this->light_candle($post_id, $name, $anonymous);
 
         if ($result) {
+            $candles_data = get_post_meta($post_id, 'condoleance_candles_data', true);
+            $users = is_array($candles_data) && isset($candles_data['users']) ? $candles_data['users'] : [];
+
             return rest_ensure_response([
                 'success' => true,
                 'count' => $this->get_candle_count($post_id),
+                'users' => $users,
                 'message' => __('Het kaarsje is aangestoken.', 'condoleance-register'),
             ]);
         }

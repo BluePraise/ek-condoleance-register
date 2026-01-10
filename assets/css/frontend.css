@@ -143,6 +143,8 @@
 .condoleance-info {
     text-align: center;
     margin: 3rem 0;
+    padding-block-end: 4rem;
+    border-bottom: 2px solid #ccc;
 }
 
 .condoleance-info__meta {
@@ -473,6 +475,75 @@
 .form-check .form-check-input {
     float: unset !important;
     margin-left: 0 !important;
+}
+
+/* Comments */
+.comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.commentlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.comment-body {
+    margin-bottom: 1.5rem;
+    background-color: #f4f6f7;
+    padding: 1rem;
+    border-radius: 4px;
+}
+.comment-meta {
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 1rem;
+}
+.comment-author  {
+    font-style: normal;
+    font-weight: 900;
+    font-family: 'Montserrat', sans-serif;
+    color: #212331;
+    text-transform: uppercase;
+}
+.comment-date a {
+    font-size: 0.9rem;
+    color: #666;
+}
+.comment-heading {
+    margin-right: 0.5rem;
+    font-weight: 900;
+    font-size: 0.5rem;
+    font-family: 'Montserrat', sans-serif;
+    text-transform: uppercase;
+    color: #666;
+}
+
+/* Comment Type Selector Buttons */
+.comment-type-btn.btn-outline-primary {
+    background-color: #fff !important;
+    border: 2px solid #B4211D !important;
+    color: #B4211D !important;
+    transition: all 0.3s ease;
+}
+
+.comment-type-btn.btn-outline-primary:hover {
+    background-color: #f8f9fa !important;
+    border-color: #B4211D !important;
+    color: #B4211D !important;
+}
+
+.comment-type-btn.btn-outline-primary.active {
+    background-color: #B4211D !important;
+    border-color: #B4211D !important;
+    color: #fff !important;
+}
+
+.comment-type-btn.btn-outline-primary.active:hover {
+    background-color: #9a1b18 !important;
+    border-color: #9a1b18 !important;
+    color: #fff !important;
 }
 
 /* =============================================================================

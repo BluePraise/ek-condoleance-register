@@ -51,6 +51,7 @@
             .then(data => {
                 if (data.success) {
                     this.updateCandleCount(postId, data.count);
+                    this.updateCandleUsersList(data.users);
                     this.showNotification(data.message, 'success');
 
                     // Close modal and reset form
@@ -74,6 +75,45 @@
         },
         updateCandleCount(postId, count) {
             $(`.condoleance-candle-count[data-post-id="${postId}"]`).text(count);
+        },
+
+        updateCandleUsersList(users) {
+            if (!users || users.length === 0) {
+                return;
+            }
+
+            // Show the link if it was hidden
+            const $link = $('a[data-bs-target="#candleUsersModal"]').parent();
+            if ($link.length && $link.hasClass('d-none')) {
+                $link.removeClass('d-none');
+            }
+
+            // Update the modal content
+            const $modalBody = $('#candleUsersModal .modal-body ul');
+            if ($modalBody.length) {
+                // Reverse to show newest first
+                const reversedUsers = [...users].reverse();
+                const usersHtml = reversedUsers.map(user => {
+                    const date = new Date(user.date);
+                    const formattedDate = date.toLocaleDateString('nl-NL', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    const displayName = user.anonymous ? 'Anoniem' : user.name;
+
+                    return `
+                        <li class="candle-user-item mb-3 pb-3 border-bottom">
+                            <small class="text-muted d-block mb-1">${formattedDate}</small>
+                            <span class="candle-user-name fw-bold">${displayName}</span>
+                        </li>
+                    `;
+                }).join('');
+
+                $modalBody.html(usersHtml);
+            }
         },
 
         showNotification(message, type) {
