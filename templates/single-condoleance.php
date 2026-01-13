@@ -70,22 +70,23 @@ while (have_posts()) :
                             $candle_gif = apply_filters('condoleance_candle_gif', site_url('/wp-content/uploads/2020/02/kaarsje.gif'));
                             ?>
                             <img src="<?php echo esc_url($candle_gif); ?>" alt="<?php esc_attr_e('Gif van een kaarsje', 'condoleance-register'); ?>" class="condoleance-info__candle-gif">
-
-                            <div class="candle-count-display">
-                                <span class="candle-label">
-                                    <span class="condoleance-candle-count" data-post-id="<?php echo esc_attr(get_the_ID()); ?>">
-                                        <?php echo esc_html($candle_count); ?>
+                            <div class="candle-container-inner">
+                                <div class="candle-count-display">
+                                    <span class="candle-label">
+                                        <span class="condoleance-candle-count" data-post-id="<?php echo esc_attr(get_the_ID()); ?>">
+                                            <?php echo esc_html($candle_count); ?>
+                                        </span>
+                                        <?php echo esc_html(_n('kaarsje aangestoken', 'kaarsjes aangestoken', $candle_count, 'condoleance-register')); ?>
                                     </span>
-                                    <?php echo esc_html(_n('kaarsje aangestoken', 'kaarsjes aangestoken', $candle_count, 'condoleance-register')); ?>
-                                </span>
-                            </div>
+                                </div>
+
                             <?php
                             // Display link to view people who lit candles
                             $candle_users = is_array($candles_data) && isset($candles_data['users']) ? $candles_data['users'] : [];
                             if (!empty($candle_users)) :
                             ?>
                                 <div class="mt-2 mb-4">
-                                    <a href="#" data-bs-toggle="modal" data-bs-target="#candleUsersModal" class="text-decoration-none">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#candleUsersModal" class="condoleance-candle-users-link">
                                         <?php esc_html_e('Deze mensen hebben een kaarsje aangestoken', 'condoleance-register'); ?>
                                     </a>
                                 </div>
@@ -99,7 +100,7 @@ while (have_posts()) :
                                 <?php esc_html_e('Steek een kaarsje aan', 'condoleance-register'); ?>
                             </button>
                             <div class="condoleance-notification alert d-none mt-5" role="alert"></div>
-
+                        </div>
 
                             <!-- Light a Candle Modal -->
                             <div class="modal fade" id="candleModal" tabindex="-1" aria-labelledby="candleModalLabel" aria-hidden="true">

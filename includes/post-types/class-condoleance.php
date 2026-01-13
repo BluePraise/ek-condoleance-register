@@ -125,7 +125,7 @@ class Condoleance
         // Deceased person details.
         $cmb = new_cmb2_box([
             'id' => $prefix . 'details',
-            'title' => esc_html__('Deceased Person Details', 'condoleance-register'),
+            'title' => esc_html__('Gegevens over de overledene', 'condoleance-register'),
             'object_types' => [self::POST_TYPE],
             'context' => 'normal',
             'priority' => 'high',
@@ -133,7 +133,7 @@ class Condoleance
         ]);
 
         $cmb->add_field([
-            'name' => esc_html__('Birth Date', 'condoleance-register'),
+            'name' => esc_html__('Geboortedatum', 'condoleance-register'),
             'id' => $prefix . 'birth_date',
             'type' => 'text_date',
             'date_format' => 'd/m/Y',
@@ -148,7 +148,7 @@ class Condoleance
         ]);
 
         $cmb->add_field([
-            'name' => esc_html__('Death Date', 'condoleance-register'),
+            'name' => esc_html__('Datum van Overlijden', 'condoleance-register'),
             'id' => $prefix . 'death_date',
             'type' => 'text_date',
             'date_format' => 'd/m/Y',
@@ -163,7 +163,7 @@ class Condoleance
         ]);
 
         $cmb->add_field([
-            'name' => esc_html__('Hero Background Image', 'condoleance-register'),
+            'name' => esc_html__('Hero Achtergrondafbeelding', 'condoleance-register'),
             'id' => $prefix . 'hero_image',
             'type' => 'file',
             'options' => [
@@ -171,30 +171,30 @@ class Condoleance
             ],
             'query_args' => ['type' => 'image'],
             'preview_size' => 'medium',
-            'description' => esc_html__('Upload a background image for the hero banner. If not set, the featured image will be used.', 'condoleance-register'),
+            'description' => esc_html__('Upload een foto voor de hero banner. Als dit niet is ingesteld, wordt de een donkere achtergrond gebruikt.', 'condoleance-register'),
         ]);
 
         $cmb->add_field([
-            'name' => esc_html__('Photo Gallery', 'condoleance-register'),
+            'name' => esc_html__('Fotogalerij', 'condoleance-register'),
             'id' => $prefix . 'photos',
             'type' => 'file_list',
             'preview_size' => 'medium',
             'query_args' => ['type' => 'image'],
             'text' => [
-                'add_upload_files_text' => esc_html__('Add Photos', 'condoleance-register'),
+                'add_upload_files_text' => esc_html__('Voeg fotos toe', 'condoleance-register'),
             ],
         ]);
 
         // Candle data (read-only, managed by JS).
         $cmb->add_field([
-            'name' => esc_html__('Virtual Candles', 'condoleance-register'),
+            'name' => esc_html__('Virtuele Kaarsen', 'condoleance-register'),
             'id' => $prefix . 'candles',
             'type' => 'textarea_small',
             'attributes' => [
                 'readonly' => 'readonly',
                 'disabled' => 'disabled',
             ],
-            'description' => esc_html__('Number of virtual candles lit by visitors. Managed automatically.', 'condoleance-register'),
+            'description' => esc_html__('Aantal virtuele kaarsen. Wordt automatisch beheerd.', 'condoleance-register'),
             'save_field' => false,
             'default_cb' => [$this, 'get_candle_count_display'],
         ]);
@@ -202,7 +202,7 @@ class Condoleance
         // Service Information.
         $cmb_service = new_cmb2_box([
             'id' => $prefix . 'service_info',
-            'title' => esc_html__('Service Information', 'condoleance-register'),
+            'title' => esc_html__('Dienst Informatie', 'condoleance-register'),
             'object_types' => [self::POST_TYPE],
             'context' => 'normal',
             'priority' => 'high',
@@ -210,28 +210,28 @@ class Condoleance
         ]);
 
         $cmb_service->add_field([
-            'name' => esc_html__('Service Date', 'condoleance-register'),
+            'name' => esc_html__('Dienst Datum', 'condoleance-register'),
             'id' => $prefix . 'service_date',
             'type' => 'text_date',
             'date_format' => 'd/m/Y',
         ]);
 
         $cmb_service->add_field([
-            'name' => esc_html__('Service Time', 'condoleance-register'),
+            'name' => esc_html__('Dienst Tijd', 'condoleance-register'),
             'id' => $prefix . 'service_time',
             'type' => 'text_time',
             'time_format' => 'H:i',
         ]);
 
         $cmb_service->add_field([
-            'name' => esc_html__('Service Location', 'condoleance-register'),
+            'name' => esc_html__('Dienst Locatie', 'condoleance-register'),
             'id' => $prefix . 'service_location',
             'type' => 'textarea_small',
-            'description' => esc_html__('Enter the address or location details.', 'condoleance-register'),
+            'description' => esc_html__('Voer het adres of de locatiegegevens in.', 'condoleance-register'),
         ]);
 
         $cmb_service->add_field([
-            'name' => esc_html__('Funeral Home', 'condoleance-register'),
+            'name' => esc_html__('Lokatie', 'condoleance-register'),
             'id' => $prefix . 'funeral_home',
             'type' => 'text',
         ]);

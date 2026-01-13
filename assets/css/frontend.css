@@ -622,6 +622,13 @@
     margin-bottom: 1.5rem;
 }
 
+.candle-container-inner {
+    background-color: #f4f6f7;
+    border: 2px solid #f4f6f7;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
 .candle-count-display {
     margin: 1.5rem 0;
     font-size: 1.2rem;
@@ -631,6 +638,10 @@
 }
 .condoleance-candle-count {
     margin-right: 0.3rem;
+}
+
+.condoleance-candle-users-link {
+    text-decoration: underline;
 }
 
 .condoleance-light-candle {
