@@ -183,24 +183,6 @@
 }
 
 /* =============================================================================
-   Responsive adjustments
-   ========================================================================== */
-
-@media (max-width: 768px) {
-    .condoleance-hero .banner-heading {
-        font-size: 1.75rem;
-    }
-
-    .condoleance-gallery__item {
-        flex: 0 1 calc(50% - 1rem);
-    }
-
-    .condoleance-meta-info .meta-row {
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-}
-/* =============================================================================
    Archive & Grid Layout
    ========================================================================== */
 
@@ -298,10 +280,9 @@
 
 .condoleance-grid {
     display: grid;
-    /* 2 column layout, 2 on ipad and 1 on mobile */
-    grid-template-columns: repeat(2, minmax(280px, 1fr));
-    gap: 2.5rem;
-    margin: 3rem;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin: 1rem;
 }
 
 /* =============================================================================
@@ -414,7 +395,7 @@
 
 .condoleance-search {
     background-color: #212331;
-    padding: 4rem;
+    padding: 2rem 1rem;
     margin: 0 auto;
 }
 
@@ -423,9 +404,7 @@
     display: block;
     margin: auto;
     width: 100%;
-    max-width: 600px;
-    padding: 0.5rem 1rem;
-    font-size: 18px;
+    font-size: 16px;
     font-family: sans-serif;
     color: #fff;
     border-bottom: 2px solid rgba(255, 255, 255, 0.3);
@@ -721,19 +700,16 @@
 
 .condoleance-pagination {
     margin: 3rem 0;
-    text-align: center;
 }
 
 .condoleance-pagination ul {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
+    padding: 1rem;
     list-style: none;
-    padding: 0;
     margin: 0;
 }
 
 .condoleance-pagination li {
+    display: inline-block;
     margin: 0;
 }
 
@@ -841,7 +817,50 @@
    Responsive Design
    ========================================================================== */
 
+/* Tablet and up: 768px+ */
+@media (min-width: 768px) {
+    /* Grid: 2 columns on larger screens */
+    .condoleance-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2.5rem;
+        margin: 3rem;
+    }
+
+    /* Search: More padding on larger screens */
+    .condoleance-search {
+        padding: 4rem;
+    }
+
+    /* Search field: Larger font and max-width */
+    .condoleance-search .js-search-field {
+        font-size: 18px;
+        max-width: 600px;
+    }
+
+    .condoleance-pagination {
+        text-align: center;
+    }
+}
+
+/* Tablet and down: 768px- */
 @media (max-width: 768px) {
+    /* Hero banner */
+    .condoleance-hero .banner-heading {
+        font-size: 1.75rem;
+    }
+
+    /* Gallery items: 2 columns on tablet */
+    .condoleance-gallery__item {
+        flex: 0 1 calc(50% - 1rem);
+    }
+
+    /* Meta info: Stack labels and values */
+    .condoleance-meta-info .meta-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    /* Archive titles */
     .archive-title {
         font-size: 2rem;
     }
@@ -850,11 +869,13 @@
         font-size: 2rem;
     }
 
+    /* Dates: Stack vertically */
     .condoleance-dates {
         flex-direction: column;
         gap: 0.5rem;
     }
 
+    /* Cards: Stack content */
     .condoleance-card {
         flex-direction: column;
     }
@@ -866,15 +887,12 @@
         height: 200px;
     }
 
-    .condoleance-grid {
-        gap: 1.5rem;
-    }
-
     .card-meta {
         flex-direction: column;
         gap: 0.5rem;
     }
 
+    /* Candle sizes */
     .condoleance-candle-count {
         font-size: 2rem;
     }
@@ -882,8 +900,14 @@
     .candle-icon-large {
         font-size: 3rem;
     }
+    .condoleance-pagination span.page-numbers,
+    .condoleance-pagination a.page-numbers {
+        min-width: 30px;
+        padding: 0.3rem;
+    }
 }
 
+/* Mobile: 480px- */
 @media (max-width: 480px) {
     .condoleance-archive,
     .condoleance-single {
