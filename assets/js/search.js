@@ -58,7 +58,7 @@ const performSearch = async function(searchTerm) {
 
     try {
         const restUrl = window.condoleanceRegister?.wpRestUrl || '/wp-json/wp/v2';
-        const requestUrl = `${restUrl}/condoleances?search=${encodeURIComponent(searchTerm)}&per_page=100`;
+        const requestUrl = `${restUrl}/condoleren?search=${encodeURIComponent(searchTerm)}&per_page=100`;
 
         const response = await fetch(requestUrl, {
             signal: controller.signal,

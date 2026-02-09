@@ -101,10 +101,10 @@ class Condoleance
             'publicly_queryable' => true,
             'capability_type' => 'post',
             'show_in_rest' => true,
-            'rest_base' => 'condoleances',
+            'rest_base' => 'condoleren',
             'rest_controller_class' => 'WP_REST_Posts_Controller',
             'rewrite' => [
-                'slug' => 'condoleances',
+                'slug' => 'condoleren',
                 'with_front' => false,
             ],
         ];
