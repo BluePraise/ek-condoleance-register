@@ -181,6 +181,12 @@ class Admin
             'sanitize_callback' => 'absint',
         ]);
 
+        register_setting('condoleance_register_settings', 'condoleance_archive_title', [
+            'type' => 'string',
+            'default' => '',
+            'sanitize_callback' => 'sanitize_text_field',
+        ]);
+
         add_settings_section(
             'condoleance_archive_settings',
             __('Archive Settings', 'condoleance-register'),
@@ -208,6 +214,14 @@ class Admin
             'condoleance_archive_per_page',
             __('Items Per Page', 'condoleance-register'),
             [$this, 'render_per_page_field'],
+            'condoleance-register-settings',
+            'condoleance_archive_settings'
+        );
+
+        add_settings_field(
+            'condoleance_archive_title',
+            __('Archive Page Title', 'condoleance-register'),
+            [$this, 'render_archive_title_field'],
             'condoleance-register-settings',
             'condoleance_archive_settings'
         );
@@ -284,6 +298,23 @@ class Admin
     }
 
     /**
+     * Render archive title field.
+     *
+     * @since 2.0.0
+     * @return void
+     */
+    public function render_archive_title_field(): void
+    {
+        $value = get_option('condoleance_archive_title', '');
+        ?>
+        <input type="text" name="condoleance_archive_title" value="<?php echo esc_attr($value); ?>" class="regular-text">
+        <p class="description">
+            <?php esc_html_e('Custom title for the archive page hero banner. Leave empty to use the default "Condoleance Register".', 'condoleance-register'); ?>
+        </p>
+        <?php
+    }
+
+    /**
      * Render settings page.
      *
      * @since 2.0.0
@@ -301,7 +332,7 @@ class Admin
         ?>
         <div class="wrap">
             <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-            
+
             <form method="post" action="options.php">
                 <?php
                 settings_fields('condoleance_register_settings');
@@ -316,7 +347,7 @@ class Admin
             <div class="card">
                 <h3><?php esc_html_e('Display Options', 'condoleance-register'); ?></h3>
                 <p><?php esc_html_e('You have two ways to display condoleances:', 'condoleance-register'); ?></p>
-                
+
                 <h4>1. <?php esc_html_e('Archive Page (Automatic)', 'condoleance-register'); ?></h4>
                 <p>
                     <?php esc_html_e('Enable the archive above and condoleances will automatically appear at:', 'condoleance-register'); ?>
