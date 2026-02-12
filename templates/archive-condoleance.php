@@ -14,7 +14,11 @@ if (!defined('ABSPATH')) {
 }
 
 get_header();
+
+get_template_part('template-parts/hero-banner');
 ?>
+
+<div class="content-wrapper">
 
 <div class="condoleance-archive">
 
@@ -28,24 +32,10 @@ get_header();
                     '<span>' . get_search_query() . '</span>'
                 );
             } else {
-                esc_html_e('In Memoriam', 'condoleance-register');
+                esc_html_e('Condoleance Register', 'condoleance-register');
             }
             ?>
         </h1>
-        <?php
-        $total = $wp_query->found_posts ?? 0;
-        if ($total > 0) :
-            ?>
-            <p class="archive-description">
-                <?php
-                printf(
-                    /* translators: %d: number of memorials */
-                    esc_html(_n('Honoring %d life', 'Honoring %d lives', $total, 'condoleance-register')),
-                    $total
-                );
-                ?>
-            </p>
-        <?php endif; ?>
     </header>
 
     <?php if (have_posts()) : ?>
@@ -191,6 +181,8 @@ get_header();
         </div>
 
     <?php endif; ?>
+
+</div>
 
 </div>
 
