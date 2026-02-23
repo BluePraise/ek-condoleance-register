@@ -23,7 +23,6 @@ $archive_title = is_search()
     get_template_part('template-parts/hero-banner', null, ['title' => $archive_title]);
 ?>
 
-<div class="condoleance-archive">
 
         <?php if (have_posts()) : ?>
 
@@ -149,8 +148,7 @@ $archive_title = is_search()
                     '<span class="nav-next-text">%s</span>',
                     esc_html__('Next', 'condoleance-register')
                 ),
-                'before_page_number' => '<span class="meta-nav screen-reader-text">' . esc_html__('Page', 'condoleance-register') . ' </span>',
-                'class' => 'pagination',
+                'before_page_number' => '<span class="meta-nav screen-reader-text">' . esc_html__('Page', 'condoleance-register') . ' </span>'
             ]);
             ?>
 
@@ -169,7 +167,6 @@ $archive_title = is_search()
 
         <?php endif; ?>
 
-</div>
 
 <?php
 get_footer();
