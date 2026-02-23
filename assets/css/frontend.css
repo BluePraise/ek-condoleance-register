@@ -694,58 +694,6 @@
     color: #666;
 }
 
-/* =============================================================================
-   Pagination
-   ========================================================================== */
-
-.condoleance-pagination {
-    margin: 3rem 0;
-}
-
-.condoleance-pagination ul {
-    padding: 1rem;
-    list-style: none;
-    margin: 0;
-}
-
-.condoleance-pagination li {
-    display: inline-block;
-    margin: 0;
-}
-
-.condoleance-pagination a,
-.condoleance-pagination span {
-    display: block;
-    padding: 0.75rem 1rem;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    color: var(--primary-color);;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    min-width: 44px;
-    text-align: center;
-}
-
-.condoleance-pagination a:hover {
-    background: var(--primary-color);
-    color: #fff;
-    border-color: var(--primary-color);
-}
-
-.condoleance-pagination .current {
-    background: var(--primary-color);
-    color: #fff;
-    border-color: var(--primary-color);
-    font-weight: 600;
-}
-
-.condoleance-pagination .dots {
-    border: none;
-    background: transparent;
-    color: #999;
-}
-
 /* WordPress core pagination support */
 .pagination,
 .posts-pagination {

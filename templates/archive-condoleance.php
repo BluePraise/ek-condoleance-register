@@ -20,7 +20,7 @@ $archive_title = is_search()
     ? sprintf(__('Search Results for: %s', 'condoleance-register'), get_search_query())
     : (get_option('condoleance_archive_title') ?: __('Condoleance Register', 'condoleance-register'));
 
-get_template_part('template-parts/hero-banner', null, ['title' => $archive_title]);
+    get_template_part('template-parts/hero-banner', null, ['title' => $archive_title]);
 ?>
 
 <div class="condoleance-archive">
@@ -150,7 +150,7 @@ get_template_part('template-parts/hero-banner', null, ['title' => $archive_title
                     esc_html__('Next', 'condoleance-register')
                 ),
                 'before_page_number' => '<span class="meta-nav screen-reader-text">' . esc_html__('Page', 'condoleance-register') . ' </span>',
-                'class' => 'condoleance-pagination',
+                'class' => 'pagination',
             ]);
             ?>
 
