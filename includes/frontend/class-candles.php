@@ -152,11 +152,15 @@ class Candles
         $result      = $this->store_candle($post_id, $store_token, $name, $anonymous);
 
         if ($result) {
+            $this->sync_post_meta($post_id);
+            $count = $this->get_candle_count($post_id);
+            $users = $this->get_candle_users($post_id);
+
             return rest_ensure_response([
                 'success'       => true,
-                'already_lit'   => true,
-                'count'         => $this->get_candle_count($post_id),
-                'users'         => $this->get_candle_users($post_id),
+                'already_lit'   => !$anonymous,
+                'count'         => $count,
+                'users'         => $users,
                 'session_token' => $token,
                 'message'       => __('Het kaarsje is aangestoken.', 'condoleance-register'),
             ]);
@@ -197,12 +201,23 @@ class Candles
             return false;
         }
 
-        // Keep post meta in sync so archive templates and shortcodes still work.
-        $count = $this->get_candle_count($post_id);
-        $users = $this->get_candle_users($post_id);
-        update_post_meta($post_id, 'condoleance_candles_data', ['count' => $count, 'users' => $users]);
-
         return true;
+    }
+
+    /**
+     * Sync candle count and users to post meta so archive templates and shortcodes
+     * can read without hitting the custom table.
+     *
+     * @since 2.1.0
+     * @param int $post_id Post ID.
+     * @return void
+     */
+    private function sync_post_meta(int $post_id): void
+    {
+        update_post_meta($post_id, 'condoleance_candles_data', [
+            'count' => $this->get_candle_count($post_id),
+            'users' => $this->get_candle_users($post_id),
+        ]);
     }
 
     /**
@@ -287,6 +302,10 @@ class Candles
         global $wpdb;
 
         $table = $wpdb->prefix . 'condoleance_candles';
+
+        // Suppress wpdb query cache so we always read the freshly inserted row.
+        $wpdb->flush();
+
         $rows  = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT name, anonymous, lit_at AS date FROM {$table} WHERE post_id = %d ORDER BY lit_at DESC",

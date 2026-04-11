@@ -23,8 +23,20 @@ while (have_posts()) :
     $death_date = get_post_meta(get_the_ID(), 'condoleance_death_date', true);
     $hero_image = get_post_meta(get_the_ID(), 'condoleance_hero_image', true);
     $photos = get_post_meta(get_the_ID(), 'condoleance_photos', true);
-    $candles_data = get_post_meta(get_the_ID(), 'condoleance_candles_data', true);
-    $candle_count = is_array($candles_data) ? ($candles_data['count'] ?? 0) : 0;
+    // Read directly from the candles table so counts and users are always accurate.
+    global $wpdb;
+    $candles_table = $wpdb->prefix . 'condoleance_candles';
+    $candle_count  = (int) $wpdb->get_var(
+        $wpdb->prepare( "SELECT COUNT(*) FROM {$candles_table} WHERE post_id = %d", get_the_ID() )
+    );
+    $candle_users  = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT name, anonymous, lit_at AS date FROM {$candles_table} WHERE post_id = %d ORDER BY lit_at DESC",
+            get_the_ID()
+        ),
+        ARRAY_A
+    ) ?: [];
+    $candles_data  = ['count' => $candle_count, 'users' => $candle_users];
 ?>
 
     <div class="hero-banner condoleance-hero">
@@ -80,17 +92,12 @@ while (have_posts()) :
                                     </span>
                                 </div>
 
-                            <?php
-                            // Display link to view people who lit candles
-                            $candle_users = is_array($candles_data) && isset($candles_data['users']) ? $candles_data['users'] : [];
-                            if (!empty($candle_users)) :
-                            ?>
-                                <div class="mt-2 mb-4">
+                            <?php // $candle_users already set from DB query above ?>
+                                <div class="mt-2 mb-4<?php echo empty($candle_users) ? ' d-none' : ''; ?>">
                                     <a href="#" data-bs-toggle="modal" data-bs-target="#candleUsersModal" class="condoleance-candle-users-link">
                                         <?php esc_html_e('Deze mensen hebben een kaarsje aangestoken', 'condoleance-register'); ?>
                                     </a>
                                 </div>
-                            <?php endif; ?>
                             <?php
                             $already_lit = \CondoleanceRegister\Frontend\Candles::has_lit(get_the_ID());
                             ?>
@@ -142,40 +149,35 @@ while (have_posts()) :
                                     </div>
                                 </div>
                             </div>
-                            <!-- Candle Users List Modal -->
-                            <?php if (!empty($candle_users)) : ?>
-                                <div class="modal fade" id="candleUsersModal" tabindex="-1" aria-labelledby="candleUsersModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="candleUsersModalLabel"><?php esc_html_e('Deze mensen hebben een kaarsje aangestoken', 'condoleance-register'); ?></h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <ul class="list-unstyled">
-                                                    <?php
-                                                    $all_users = array_reverse($candle_users); // Show newest first
-                                                    foreach ($all_users as $user) :
-                                                    ?>
-                                                        <li class="candle-user-item mb-3 pb-3 border-bottom">
-                                                            <small class="text-muted d-block mb-1">
-                                                                <?php echo esc_html(date_i18n('d-m-Y H:i', strtotime($user['date']))); ?>
-                                                            </small>
-                                                            <span class="candle-user-name fw-bold">
-                                                                <?php
-                                                                echo isset($user['anonymous']) && $user['anonymous']
-                                                                    ? esc_html__('Anoniem', 'condoleance-register')
-                                                                    : esc_html($user['name']);
-                                                                ?>
-                                                            </span>
-                                                        </li>
-                                                    <?php endforeach; ?>
-                                                </ul>
-                                            </div>
+                            <!-- Candle Users List Modal — always rendered so JS can populate it -->
+                            <div class="modal fade" id="candleUsersModal" tabindex="-1" aria-labelledby="candleUsersModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="candleUsersModalLabel"><?php esc_html_e('Deze mensen hebben een kaarsje aangestoken', 'condoleance-register'); ?></h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <ul class="list-unstyled">
+                                                <?php foreach ($candle_users as $user) : // already DESC from DB ?>
+                                                    <li class="candle-user-item mb-3 pb-3 border-bottom">
+                                                        <small class="text-muted d-block mb-1">
+                                                            <?php echo esc_html(date_i18n('d-m-Y H:i', strtotime($user['date']))); ?>
+                                                        </small>
+                                                        <span class="candle-user-name fw-bold">
+                                                            <?php
+                                                            echo !empty($user['anonymous'])
+                                                                ? esc_html__('Anoniem', 'condoleance-register')
+                                                                : esc_html($user['name']);
+                                                            ?>
+                                                        </span>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            </ul>
                                         </div>
                                     </div>
                                 </div>
-                            <?php endif; ?>
+                            </div>
                         </div>
                     </div>
 

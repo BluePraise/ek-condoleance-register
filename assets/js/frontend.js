@@ -169,7 +169,7 @@
                     day: '2-digit', month: '2-digit', year: 'numeric',
                     hour: '2-digit', minute: '2-digit',
                 });
-                const displayName = user.anonymous ? 'Anoniem' : user.name;
+                const displayName = (user.anonymous || user.name === '') ? 'Anoniem' : user.name;
 
                 return `<li class="candle-user-item mb-3 pb-3 border-bottom">
                     <small class="text-muted d-block mb-1">${formattedDate}</small>
@@ -199,6 +199,11 @@
         },
     };
 
-    $(document).ready(() => CondoleanceRegister.init());
+    $(document).ready(() => {
+        if (typeof condoleanceRegister === 'undefined') {
+            return;
+        }
+        CondoleanceRegister.init();
+    });
 
 })(jQuery);
