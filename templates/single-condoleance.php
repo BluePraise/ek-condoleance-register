@@ -91,13 +91,24 @@ while (have_posts()) :
                                     </a>
                                 </div>
                             <?php endif; ?>
+                            <?php
+                            $already_lit = \CondoleanceRegister\Frontend\Candles::has_lit(get_the_ID());
+                            ?>
                             <button
-                                class="condoleance-light-candle button"
+                                class="condoleance-light-candle button<?php echo $already_lit ? ' already-lit' : ''; ?>"
                                 data-post-id="<?php echo esc_attr(get_the_ID()); ?>"
-                                data-bs-toggle="modal"
-                                data-bs-target="#candleModal"
+                                <?php if ($already_lit) : ?>
+                                    disabled
+                                <?php else : ?>
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#candleModal"
+                                <?php endif; ?>
                                 aria-label="<?php esc_attr_e('Steek een kaarsje aan', 'condoleance-register'); ?>">
-                                <?php esc_html_e('Steek een kaarsje aan', 'condoleance-register'); ?>
+                                <?php if ($already_lit) : ?>
+                                    <?php esc_html_e('Kaarsje al aangestoken', 'condoleance-register'); ?>
+                                <?php else : ?>
+                                    <?php esc_html_e('Steek een kaarsje aan', 'condoleance-register'); ?>
+                                <?php endif; ?>
                             </button>
                             <div class="condoleance-notification alert d-none mt-5" role="alert"></div>
                         </div>
@@ -120,7 +131,10 @@ while (have_posts()) :
                                                 </div>
                                                 <div class="form-check mb-3">
                                                     <input type="checkbox" class="form-check-input" name="anonymous" id="anonymous" value="0">
-                                                    <label class="form-check-label" for="anonymous">Ik wil anoniem blijven.</label>
+                                                    <label class="form-check-label" for="anonymous"><?php esc_html_e('Ik wil anoniem blijven.', 'condoleance-register'); ?></label>
+                                                    <div id="anonymous-notice" class="form-text text-muted mt-1" style="display:none;">
+                                                        <?php esc_html_e('Uw naam wordt niet openbaar getoond.', 'condoleance-register'); ?>
+                                                    </div>
                                                 </div>
                                                 <button type="submit" class="button btn btn-primary w-100"><?php esc_html_e('Bevestig', 'condoleance-register'); ?></button>
                                             </form>

@@ -654,6 +654,16 @@
     cursor: not-allowed;
 }
 
+.condoleance-light-candle.already-lit,
+.condoleance-light-candle[disabled] {
+    background: #888;
+    opacity: 0.75;
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+    pointer-events: none;
+}
+
 /* Candle Users List */
 .candle-users {
     margin-top: 2rem;

@@ -3,7 +3,7 @@
  * Plugin Name:       Condoleance Register 2.0
  * Plugin URI:        https://magaliechetrit.com
  * Description:       Modern condoleance and memorial management system with virtual candles, comments, and photo galleries
- * Version:           2.0.1
+ * Version:           2.1.0
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Magalie Chetrit
@@ -26,7 +26,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants.
-define('CONDOLEANCE_REGISTER_VERSION', '2.0.0');
+define('CONDOLEANCE_REGISTER_VERSION', '2.1.0');
 define('CONDOLEANCE_REGISTER_FILE', __FILE__);
 define('CONDOLEANCE_REGISTER_PATH', plugin_dir_path(__FILE__));
 define('CONDOLEANCE_REGISTER_URL', plugin_dir_url(__FILE__));

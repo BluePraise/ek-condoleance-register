@@ -38,6 +38,8 @@ class Comments
         add_action('comment_form_after', [$this, 'close_comment_modal']);
         add_action('condoleance_before_comments', [$this, 'add_modal_trigger_button']);
         add_filter('comments_template', [$this, 'load_custom_comments_template']);
+        add_filter('pre_comment_approved', [$this, 'auto_approve_condoleance_comment'], 10, 2);
+        add_filter('preprocess_comment', [$this, 'fill_comment_content_for_media_types']);
     }
 
     /**
@@ -128,11 +130,7 @@ class Comments
      */
     public function enqueue_comment_scripts(): void
     {
-        if (!is_singular('condoleance')) {
-            return;
-        }
-
-        wp_enqueue_media();
+        // Reserved for future comment-specific script enqueues.
     }
 
     /**
@@ -168,7 +166,6 @@ class Comments
         <div id="photo-upload-section" class="mb-3" style="display: none;">
             <label class="form-label"><?php esc_html_e('Upload foto:', 'condoleance-register'); ?></label>
             <input type="file" id="comment_photo" name="comment_photo" accept="image/*" class="form-control" />
-            <input type="hidden" id="comment_attachment_id" name="comment_attachment_id" />
         </div>
 
         <div id="video-url-section" class="mb-3" style="display: none;">
@@ -181,6 +178,16 @@ class Comments
 
         <script>
         jQuery(document).ready(function($) {
+            // Allow file uploads in the comment form.
+            var $form = $('#commentform');
+            if ($form.length) {
+                $form.attr('enctype', 'multipart/form-data');
+            }
+
+            var $textarea       = $('#comment');
+            var $textareaWrap   = $textarea.closest('p');
+            var $videoUrl       = $('#comment_video_url');
+
             $('.comment-type-btn').on('click', function() {
                 $('.comment-type-btn').removeClass('active');
                 $(this).addClass('active');
@@ -188,41 +195,19 @@ class Comments
                 var type = $(this).data('type');
                 $('#comment_type').val(type);
 
-                // Hide all special sections
                 $('#photo-upload-section, #video-url-section').hide();
+                $videoUrl.prop('required', false);
 
-                // Show relevant section
                 if (type === 'photo') {
                     $('#photo-upload-section').show();
+                    $textareaWrap.hide();
                 } else if (type === 'video') {
                     $('#video-url-section').show();
+                    $videoUrl.prop('required', true);
+                    $textareaWrap.hide();
+                } else {
+                    $textareaWrap.show();
                 }
-            });
-
-            // Handle photo upload
-            $('#comment_photo').on('change', function(e) {
-                var file = e.target.files[0];
-                if (!file) return;
-
-                var formData = new FormData();
-                formData.append('file', file);
-                formData.append('action', 'upload_attachment');
-
-                $.ajax({
-                    url: '<?php echo admin_url("admin-ajax.php"); ?>',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader('X-WP-Nonce', '<?php echo wp_create_nonce("media-form"); ?>');
-                    },
-                    success: function(response) {
-                        if (response.success && response.data.id) {
-                            $('#comment_attachment_id').val(response.data.id);
-                        }
-                    }
-                });
             });
         });
         </script>
@@ -262,7 +247,7 @@ class Comments
             '</p>' .
             '<p class="comment-form-comment">' .
             '<label for="comment">' . __('Bericht', 'condoleance-register') . '</label>' .
-            '<textarea id="comment" name="comment" cols="45" rows="8" required="required" class="form-control" placeholder="' . esc_attr__('Schrijf je bericht hier...', 'condoleance-register') . '"></textarea>' .
+            '<textarea id="comment" name="comment" cols="45" rows="8" class="form-control" placeholder="' . esc_attr__('Schrijf je bericht hier...', 'condoleance-register') . '"></textarea>' .
             '</p>';
 
         return $defaults;
@@ -378,12 +363,63 @@ class Comments
                 endif;
                 ?>
 
+                <?php
+                $raw_content = get_comment_text($comment);
+                $is_placeholder = in_array(trim($raw_content), ['–', '-'], true);
+                if (!$is_placeholder) :
+                ?>
                 <div class="comment-content <?php echo esc_attr($comment_type ? 'comment-type-' . $comment_type : ''); ?>">
                     <span class="comment-heading"><?php esc_html_e('Bericht', 'condoleance-register'); ?></span>
                     <?php comment_text(); ?>
                 </div>
+                <?php endif; ?>
             </article>
         <?php
+    }
+
+    /**
+     * Auto-approve comments on condoleance posts so they appear immediately.
+     *
+     * WordPress holds comments for moderation by default when the commenter
+     * hasn't been previously approved. Condoleance pages are public memorial
+     * registers where messages should be visible straight away.
+     *
+     * @since 2.0.0
+     * @param int|string           $approved   Current approval status (0, 1, or 'spam').
+     * @param array<string, mixed> $commentdata Comment data array.
+     * @return int|string Modified approval status.
+     */
+    public function auto_approve_condoleance_comment(int|string $approved, array $commentdata): int|string
+    {
+        if ('spam' === $approved) {
+            return $approved;
+        }
+
+        $post_id = isset($commentdata['comment_post_ID']) ? (int) $commentdata['comment_post_ID'] : 0;
+        if ($post_id > 0 && 'condoleance' === get_post_type($post_id)) {
+            return 1;
+        }
+
+        return $approved;
+    }
+
+    /**
+     * Ensure comment_content is never empty for photo/video comments so
+     * WordPress's server-side "empty comment" check doesn't block the submission.
+     *
+     * @since 2.0.0
+     * @param array<string, mixed> $commentdata Comment data before insertion.
+     * @return array<string, mixed>
+     */
+    public function fill_comment_content_for_media_types(array $commentdata): array
+    {
+        $type = isset($_POST['comment_type']) ? sanitize_text_field($_POST['comment_type']) : '';
+
+        if (in_array($type, ['photo', 'video'], true) && empty(trim($commentdata['comment_content'] ?? ''))) {
+            $commentdata['comment_content'] = '–';
+        }
+
+        return $commentdata;
     }
 
     /**
@@ -411,7 +447,8 @@ class Comments
      */
     public function save_comment_meta(int $comment_id): void
     {
-        if (!is_singular('condoleance')) {
+        $comment = get_comment($comment_id);
+        if (!$comment || 'condoleance' !== get_post_type((int) $comment->comment_post_ID)) {
             return;
         }
 
@@ -427,10 +464,19 @@ class Comments
             update_comment_meta($comment_id, 'condoleance_comment_type', $type);
         }
 
-        // Save attachment ID (for photos)
-        if (isset($_POST['comment_attachment_id']) && !empty($_POST['comment_attachment_id'])) {
-            $attachment_id = absint($_POST['comment_attachment_id']);
-            update_comment_meta($comment_id, 'condoleance_attachment_id', $attachment_id);
+        // Save attachment ID (for photos) — upload the file that came with the form.
+        if (
+            !empty($_FILES['comment_photo']['tmp_name'])
+            && UPLOAD_ERR_OK === (int) $_FILES['comment_photo']['error']
+        ) {
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+            require_once ABSPATH . 'wp-admin/includes/media.php';
+
+            $attachment_id = media_handle_upload('comment_photo', (int) $comment->comment_post_ID);
+            if (!is_wp_error($attachment_id)) {
+                update_comment_meta($comment_id, 'condoleance_attachment_id', $attachment_id);
+            }
         }
 
         // Save video URL

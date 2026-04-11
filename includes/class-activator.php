@@ -53,9 +53,58 @@ class Activator
         // Check for old Tahlil plugin data.
         self::check_migration_needed();
 
+        // Create custom database tables.
+        self::create_tables();
+
         // Set activation timestamp.
         update_option('condoleance_register_activated', time());
         update_option('condoleance_register_version', CONDOLEANCE_REGISTER_VERSION);
+    }
+
+    /**
+     * Create custom database tables.
+     *
+     * @since 2.1.0
+     * @return void
+     */
+    public static function create_tables(): void
+    {
+        global $wpdb;
+
+        $table_name      = $wpdb->prefix . 'condoleance_candles';
+        $charset_collate = $wpdb->get_charset_collate();
+
+        // Drop old UNIQUE constraint before dbDelta so anonymous one-off tokens
+        // can be inserted multiple times (deduplication is handled in PHP).
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+        $unique_exists = (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM information_schema.statistics
+                 WHERE table_schema = %s AND table_name = %s AND index_name = 'session_post' AND non_unique = 0",
+                DB_NAME,
+                $table_name
+            )
+        );
+        if ($unique_exists) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $wpdb->query("ALTER TABLE {$table_name} DROP INDEX session_post");
+        }
+
+        $sql = "CREATE TABLE {$table_name} (
+            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            post_id bigint(20) unsigned NOT NULL,
+            session_token varchar(64) NOT NULL,
+            name varchar(255) NOT NULL DEFAULT '',
+            anonymous tinyint(1) NOT NULL DEFAULT 0,
+            ip_address varchar(45) NOT NULL DEFAULT '',
+            lit_at datetime NOT NULL,
+            PRIMARY KEY (id),
+            KEY post_id (post_id),
+            KEY session_post (session_token, post_id)
+        ) {$charset_collate};";
+
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        dbDelta($sql);
     }
 
     /**

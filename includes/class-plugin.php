@@ -84,6 +84,7 @@ final class Plugin
     private function init_hooks(): void
     {
         add_action('init', [$this, 'init_components'], 0);
+        add_action('init', [$this, 'maybe_create_tables'], 1);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
         add_filter('single_template', [$this, 'load_single_template']);
@@ -92,6 +93,21 @@ final class Plugin
         if (get_option('condoleance_enable_archive', true)) {
             add_filter('archive_template', [$this, 'load_archive_template']);
             add_action('pre_get_posts', [$this, 'modify_archive_query']);
+        }
+    }
+
+    /**
+     * Create or upgrade database tables when the plugin version changes.
+     *
+     * @since 2.1.0
+     * @return void
+     */
+    public function maybe_create_tables(): void
+    {
+        $stored = get_option('condoleance_register_db_version', '0.0.0');
+        if (version_compare($stored, CONDOLEANCE_REGISTER_VERSION, '<')) {
+            Activator::create_tables();
+            update_option('condoleance_register_db_version', CONDOLEANCE_REGISTER_VERSION);
         }
     }
 
@@ -165,14 +181,19 @@ final class Plugin
             true
         );
 
+        $cookie_config = Frontend\Candles::cookie_config();
+
         wp_localize_script('condoleance-register-frontend', 'condoleanceRegister', [
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-            'restUrl' => rest_url('condoleance-register/v1'),
-            'wpRestUrl' => rest_url('wp/v2'),
-            'nonce' => wp_create_nonce('condoleance_register_nonce'),
-            'strings' => [
-                'error' => esc_html__('An error occurred. Please try again.', 'condoleance-register'),
-                'success' => esc_html__('Success!', 'condoleance-register'),
+            'ajaxUrl'      => admin_url('admin-ajax.php'),
+            'restUrl'      => rest_url('condoleance-register/v1'),
+            'wpRestUrl'    => rest_url('wp/v2'),
+            'nonce'        => wp_create_nonce('condoleance_register_nonce'),
+            'cookieName'   => $cookie_config['name'],
+            'cookieExpiry' => $cookie_config['lifetime'],
+            'strings'      => [
+                'error'      => esc_html__('An error occurred. Please try again.', 'condoleance-register'),
+                'success'    => esc_html__('Success!', 'condoleance-register'),
+                'alreadyLit' => esc_html__('U heeft al een kaarsje aangestoken.', 'condoleance-register'),
             ],
         ]);
     }
