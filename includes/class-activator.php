@@ -170,6 +170,23 @@ class Activator
                 continue;
             }
 
+            // If the table has more rows than the historical total the migration ran
+            // multiple times and created duplicates. Clean up the historical rows
+            // (ip_address = '') for this post and re-insert from scratch.
+            // Rows with a real IP were lit by actual visitors and are never touched.
+            if ($table_count > $total) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "DELETE FROM {$table} WHERE post_id = %d AND ip_address = ''",
+                        $post_id
+                    )
+                );
+                $table_count = (int) $wpdb->get_var(
+                    $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE post_id = %d", $post_id )
+                );
+            }
+
             // Only insert rows for posts that have none yet.
             if ($table_count === 0) {
                 if ($source === 'v2') {
