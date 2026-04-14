@@ -150,66 +150,37 @@ class Activator
             $table_count = (int) $wpdb->get_var(
                 $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE post_id = %d", $post_id )
             );
+            $legacy_now  = (int) get_post_meta($post_id, 'condoleance_candle_legacy_count', true);
 
-            // Determine historical total from v2.0 meta or Tahlil meta.
+            // Determine the authoritative historical total.
+            // Prefer the Tahlil backup (cmb_condalances_candles) when it exists because
+            // condoleance_candles_data['count'] can be stale (overwritten by sync_post_meta).
+            // The Tahlil meta is never touched after migration so it is the most reliable source.
+            $tahlil_meta = get_post_meta($post_id, 'cmb_condalances_candles', true);
+            $tahlil_meta = is_array($tahlil_meta) ? $tahlil_meta : [];
+
             $v2_meta = get_post_meta($post_id, 'condoleance_candles_data', true);
 
-            if (is_array($v2_meta) && !empty($v2_meta['count'])) {
-                $total = (int) $v2_meta['count'];
-                $users = is_array($v2_meta['users'] ?? null) ? $v2_meta['users'] : [];
-                $source = 'v2';
+            if (!empty($tahlil_meta['count'])) {
+                // Use Tahlil count as the ground truth for historical total.
+                $historical = (int) $tahlil_meta['count'];
+                $users      = is_array($tahlil_meta['authors'] ?? null) ? $tahlil_meta['authors'] : [];
+                $source     = 'tahlil';
+            } elseif (is_array($v2_meta) && !empty($v2_meta['count'])) {
+                $historical = (int) $v2_meta['count'];
+                $users      = is_array($v2_meta['users'] ?? null) ? $v2_meta['users'] : [];
+                $source     = 'v2';
             } else {
-                $tahlil_meta = get_post_meta($post_id, 'cmb_condalances_candles', true);
-                $tahlil_meta = is_array($tahlil_meta) ? $tahlil_meta : [];
-                $total = (int) ($tahlil_meta['count'] ?? 0);
-                $users = is_array($tahlil_meta['authors'] ?? null) ? $tahlil_meta['authors'] : [];
-                $source = 'tahlil';
+                continue; // No historical data — skip.
             }
 
-            if ($total === 0) {
+            if ($historical === 0) {
                 continue;
             }
 
-            // If the table has more rows than the historical total the migration ran
-            // multiple times and created duplicates. Clean up the historical rows
-            // (ip_address = '') for this post and re-insert from scratch.
-            // Rows with a real IP were lit by actual visitors and are never touched.
-            if ($table_count > $total) {
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-                $wpdb->query(
-                    $wpdb->prepare(
-                        "DELETE FROM {$table} WHERE post_id = %d AND ip_address = ''",
-                        $post_id
-                    )
-                );
-                $table_count = (int) $wpdb->get_var(
-                    $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE post_id = %d", $post_id )
-                );
-            }
-
-            // Only insert rows for posts that have none yet.
+            // Only insert rows for posts that have none yet — never delete existing rows.
             if ($table_count === 0) {
-                if ($source === 'v2') {
-                    foreach ($users as $user) {
-                        $name = $user['name'] ?? '';
-                        if ($name === '' && empty($user['anonymous'])) {
-                            // Skip empty-name non-anonymous entries (corrupt data).
-                            continue;
-                        }
-                        $wpdb->insert(
-                            $table,
-                            [
-                                'post_id'       => $post_id,
-                                'session_token' => bin2hex(random_bytes(32)),
-                                'name'          => sanitize_text_field($name),
-                                'anonymous'     => (int) ($user['anonymous'] ?? false),
-                                'ip_address'    => '',
-                                'lit_at'        => self::parse_legacy_date($user['date'] ?? ''),
-                            ],
-                            ['%d', '%s', '%s', '%d', '%s', '%s']
-                        );
-                    }
-                } else {
+                if ($source === 'tahlil') {
                     // Tahlil only tracked named candles; anonymous ones are
                     // accounted for via legacy_count below.
                     foreach ($users as $user) {
@@ -230,21 +201,46 @@ class Activator
                             ['%d', '%s', '%s', '%d', '%s', '%s']
                         );
                     }
+                } else {
+                    foreach ($users as $user) {
+                        $name = $user['name'] ?? '';
+                        if ($name === '' && empty($user['anonymous'])) {
+                            // Skip empty-name non-anonymous entries (corrupt data).
+                            continue;
+                        }
+                        $wpdb->insert(
+                            $table,
+                            [
+                                'post_id'       => $post_id,
+                                'session_token' => bin2hex(random_bytes(32)),
+                                'name'          => sanitize_text_field($name),
+                                'anonymous'     => (int) ($user['anonymous'] ?? false),
+                                'ip_address'    => '',
+                                'lit_at'        => self::parse_legacy_date($user['date'] ?? ''),
+                            ],
+                            ['%d', '%s', '%s', '%d', '%s', '%s']
+                        );
+                    }
                 }
 
-                // Refresh count after inserts.
+                // Refresh after inserts.
                 $table_count = (int) $wpdb->get_var(
                     $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE post_id = %d", $post_id )
                 );
             }
 
-            // Always recalculate legacy_count from the actual table state so that
-            // stale or incorrect values (including the doubling bug) are corrected.
-            $legacy = max(0, $total - $table_count);
-            if ($legacy > 0) {
-                update_post_meta($post_id, 'condoleance_candle_legacy_count', $legacy);
-            } else {
-                delete_post_meta($post_id, 'condoleance_candle_legacy_count');
+            // Correct legacy_count without touching any rows.
+            // The display total is table_count + legacy_count. It should equal
+            // historical (plus any real candles lit after migration, which are
+            // already in the table). If legacy_count is inflating the total
+            // (the doubling bug), clamp it to max(0, historical - table_count).
+            $correct_legacy = max(0, $historical - $table_count);
+            if ($correct_legacy !== $legacy_now) {
+                if ($correct_legacy > 0) {
+                    update_post_meta($post_id, 'condoleance_candle_legacy_count', $correct_legacy);
+                } else {
+                    delete_post_meta($post_id, 'condoleance_candle_legacy_count');
+                }
             }
         }
     }
