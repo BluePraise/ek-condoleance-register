@@ -28,7 +28,7 @@ while (have_posts()) :
     $candles_table = $wpdb->prefix . 'condoleance_candles';
     $candle_count  = (int) $wpdb->get_var(
         $wpdb->prepare( "SELECT COUNT(*) FROM {$candles_table} WHERE post_id = %d", get_the_ID() )
-    );
+    ) + (int) get_post_meta( get_the_ID(), 'condoleance_candle_legacy_count', true );
     $candle_users  = $wpdb->get_results(
         $wpdb->prepare(
             "SELECT name, anonymous, lit_at AS date FROM {$candles_table} WHERE post_id = %d ORDER BY lit_at DESC",

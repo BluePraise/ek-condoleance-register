@@ -118,9 +118,12 @@ class Activator
      * and the number of tracked users is saved as condoleance_candle_legacy_count
      * so the total display remains accurate without fabricating anonymous rows.
      *
-     * Safe to run multiple times — posts that already have rows skip inserts but
-     * always get their legacy_count recalculated from the actual table state,
-     * which corrects any stale or doubled values from previous migration runs.
+     * Safe to run multiple times:
+     *   - Historical inserts are guarded by ip_address='' row count (not total row count),
+     *     so test candles lit before migration don't block the historical import.
+     *   - legacy_count is always recalculated from the actual table state.
+     *   - Excess ip_address='' rows (from duplicate migration runs) are safely removed
+     *     because those rows are always migration artifacts, never real visitor candles.
      *
      * @since 2.1.1
      * @return void
@@ -132,8 +135,6 @@ class Activator
         $table = $wpdb->prefix . 'condoleance_candles';
 
         // Process all published condoleance posts — not just empty ones.
-        // Posts that already have rows skip the INSERT phase but still get
-        // their legacy_count corrected based on the actual table state.
         $post_ids = $wpdb->get_col(
             "SELECT p.ID
              FROM {$wpdb->posts} p
@@ -147,9 +148,6 @@ class Activator
 
         foreach ($post_ids as $raw_id) {
             $post_id     = (int) $raw_id;
-            $table_count = (int) $wpdb->get_var(
-                $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE post_id = %d", $post_id )
-            );
             $legacy_now  = (int) get_post_meta($post_id, 'condoleance_candle_legacy_count', true);
 
             // Determine the authoritative historical total.
@@ -162,7 +160,6 @@ class Activator
             $v2_meta = get_post_meta($post_id, 'condoleance_candles_data', true);
 
             if (!empty($tahlil_meta['count'])) {
-                // Use Tahlil count as the ground truth for historical total.
                 $historical = (int) $tahlil_meta['count'];
                 $users      = is_array($tahlil_meta['authors'] ?? null) ? $tahlil_meta['authors'] : [];
                 $source     = 'tahlil';
@@ -178,8 +175,21 @@ class Activator
                 continue;
             }
 
-            // Only insert rows for posts that have none yet — never delete existing rows.
-            if ($table_count === 0) {
+            // Count rows by type.
+            // ip_address='' rows are always migration-inserted historical candles.
+            // Rows with a real/test IP were lit by actual visitors (or during local testing).
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $ip_empty_count = (int) $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$table} WHERE post_id = %d AND ip_address = ''",
+                    $post_id
+                )
+            );
+
+            // Only insert historical rows if none have been inserted yet.
+            // This allows re-runs after race-condition posts (where test candles
+            // with real IPs exist but historical migration never ran).
+            if ($ip_empty_count === 0) {
                 if ($source === 'tahlil') {
                     // Tahlil only tracked named candles; anonymous ones are
                     // accounted for via legacy_count below.
@@ -205,7 +215,6 @@ class Activator
                     foreach ($users as $user) {
                         $name = $user['name'] ?? '';
                         if ($name === '' && empty($user['anonymous'])) {
-                            // Skip empty-name non-anonymous entries (corrupt data).
                             continue;
                         }
                         $wpdb->insert(
@@ -223,18 +232,48 @@ class Activator
                     }
                 }
 
-                // Refresh after inserts.
-                $table_count = (int) $wpdb->get_var(
-                    $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE post_id = %d", $post_id )
+                // Refresh ip_empty_count after inserts.
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+                $ip_empty_count = (int) $wpdb->get_var(
+                    $wpdb->prepare(
+                        "SELECT COUNT(*) FROM {$table} WHERE post_id = %d AND ip_address = ''",
+                        $post_id
+                    )
                 );
             }
 
-            // Correct legacy_count without touching any rows.
-            // The display total is table_count + legacy_count. It should equal
-            // historical (plus any real candles lit after migration, which are
-            // already in the table). If legacy_count is inflating the total
-            // (the doubling bug), clamp it to max(0, historical - table_count).
-            $correct_legacy = max(0, $historical - $table_count);
+            // Remove excess ip_address='' rows caused by duplicate migration runs.
+            // These are always migration artifacts — real visitors never have ip_address=''.
+            // We keep the most recently inserted ones (highest id) and remove the oldest excess.
+            if ($ip_empty_count > $historical) {
+                $excess = $ip_empty_count - $historical;
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+                $wpdb->query(
+                    $wpdb->prepare(
+                        "DELETE FROM {$table}
+                         WHERE post_id = %d AND ip_address = ''
+                         ORDER BY id ASC
+                         LIMIT %d",
+                        $post_id,
+                        $excess
+                    )
+                );
+                $ip_empty_count = $historical;
+            }
+
+            // Recalculate total rows after any changes above.
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+            $table_count = (int) $wpdb->get_var(
+                $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE post_id = %d", $post_id )
+            );
+
+            // Correct legacy_count so that: table_count + legacy_count = historical + real_new_candles.
+            // Real new candles = rows with a non-empty ip_address (lit after migration).
+            // We cannot know which real-IP rows pre-date vs post-date migration, so we
+            // use: legacy = max(0, historical - ip_empty_count).
+            // This ensures the historical total is always represented, with real-IP rows
+            // adding naturally on top.
+            $correct_legacy = max(0, $historical - $ip_empty_count);
             if ($correct_legacy !== $legacy_now) {
                 if ($correct_legacy > 0) {
                     update_post_meta($post_id, 'condoleance_candle_legacy_count', $correct_legacy);

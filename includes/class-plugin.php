@@ -107,6 +107,7 @@ final class Plugin
         $stored = get_option('condoleance_register_db_version', '0.0.0');
         if (version_compare($stored, CONDOLEANCE_REGISTER_VERSION, '<')) {
             Activator::create_tables();
+            Activator::migrate_post_meta_candles();
             update_option('condoleance_register_db_version', CONDOLEANCE_REGISTER_VERSION);
         }
     }

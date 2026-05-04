@@ -284,10 +284,13 @@ class Candles
     {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'condoleance_candles';
-        return (int) $wpdb->get_var(
+        $table  = $wpdb->prefix . 'condoleance_candles';
+        $db     = (int) $wpdb->get_var(
             $wpdb->prepare("SELECT COUNT(*) FROM {$table} WHERE post_id = %d", $post_id)
         );
+        $legacy = (int) get_post_meta($post_id, 'condoleance_candle_legacy_count', true);
+
+        return $db + $legacy;
     }
 
     /**

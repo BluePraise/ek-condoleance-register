@@ -35,13 +35,18 @@ $archive_title = is_search()
             <div class="condoleance-register-list js-search-list">
                 <div class="condoleance-grid">
                 <?php
+                global $wpdb;
                 while (have_posts()) :
                     the_post();
 
-                    $birth_date = get_post_meta(get_the_ID(), 'condoleance_birth_date', true);
-                    $death_date = get_post_meta(get_the_ID(), 'condoleance_death_date', true);
-                    $candles_data = get_post_meta(get_the_ID(), 'condoleance_candles_data', true);
-                    $candle_count = is_array($candles_data) ? ($candles_data['count'] ?? 0) : 0;
+                    $birth_date   = get_post_meta(get_the_ID(), 'condoleance_birth_date', true);
+                    $death_date   = get_post_meta(get_the_ID(), 'condoleance_death_date', true);
+                    $candle_count = (int) $wpdb->get_var(
+                        $wpdb->prepare(
+                            "SELECT COUNT(*) FROM {$wpdb->prefix}condoleance_candles WHERE post_id = %d",
+                            get_the_ID()
+                        )
+                    ) + (int) get_post_meta( get_the_ID(), 'condoleance_candle_legacy_count', true );
                     ?>
 
                     <article id="post-<?php the_ID(); ?>" <?php post_class('condoleance-card'); ?>>
